@@ -1,0 +1,109 @@
+@using MyMiniCar.Web.Models
+
+@*
+   Live keychain preview: the uploaded car photo is masked into a car-shaped
+   tag, tinted by the chosen PLA filament, with the personalised text overlaid.
+   Everything is driven by parameters, so it updates reactively from the Studio.
+*@
+
+<div class="keychain">
+    <svg viewBox="0 0 252 150" role="img" aria-label="Keychain preview">
+        <defs>
+            <clipPath id="carclip-@_uid">
+                <path d="@CarPath" />
+            </clipPath>
+            <linearGradient id="filgrad-@_uid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="@Light" />
+                <stop offset="100%" stop-color="@Dark" />
+            </linearGradient>
+            <pattern id="layerlines-@_uid" width="6" height="6" patternUnits="userSpaceOnUse">
+                <rect width="6" height="6" fill="transparent" />
+                <line x1="0" y1="3" x2="6" y2="3" stroke="rgba(0,0,0,0.18)" stroke-width="1" />
+            </pattern>
+        </defs>
+
+        <!-- Wheels (printed in filament) -->
+        <g>
+            <circle cx="58" cy="106" r="21" fill="@Dark" />
+            <circle cx="58" cy="106" r="11" fill="@Light" opacity="0.7" />
+            <circle cx="194" cy="106" r="21" fill="@Dark" />
+            <circle cx="194" cy="106" r="11" fill="@Light" opacity="0.7" />
+        </g>
+
+        <!-- Keyring hardware -->
+        <g>
+            <circle cx="128" cy="14" r="11" fill="none" stroke="#b8bfca" stroke-width="3.5" />
+            <circle cx="128" cy="14" r="11" fill="none" stroke="#e9edf3" stroke-width="1.2" />
+        </g>
+
+        <!-- Tag body: filament plate -->
+        <path d="@CarPath" fill="url(#filgrad-@_uid)" stroke="rgba(0,0,0,0.18)" stroke-width="1.5" />
+
+        @if (!string.IsNullOrEmpty(ImageDataUrl))
+        {
+            <!-- User's car photo, masked into the car shape (inset to leave a filament rim) -->
+            <image href="@ImageDataUrl" x="22" y="44" width="208" height="56"
+                   preserveAspectRatio="xMidYMid slice" clip-path="url(#carclip-@_uid)" />
+        }
+
+        <!-- Printed layer-line texture -->
+        <path d="@CarPath" fill="url(#layerlines-@_uid)" class="kc-texture" />
+
+        <!-- Punch hole -->
+        <circle cx="128" cy="36" r="4.5" fill="@Dark" stroke="rgba(0,0,0,0.25)" stroke-width="1" />
+    </svg>
+
+    <!-- Text overlay (HTML so templates style freely) -->
+    <div class="kc-text-layer">
+        @if (Template.HasSecondLine)
+        {
+            <div class="kc-text @Template.CssVariant">
+                @Line1Display
+                <span class="date">@Line2Display</span>
+            </div>
+        }
+        else
+        {
+            <div class="kc-text @Template.CssVariant">@Line1Display</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? ImageDataUrl { get; set; }
+    [Parameter] public string FilamentCss { get; set; } = "fil-red";
+    [Parameter] public TextTemplate Template { get; set; } = TextTemplates.All[0];
+    [Parameter] public string Line1 { get; set; } = string.Empty;
+    [Parameter] public string Line2 { get; set; } = string.Empty;
+    /// <summary>Show the template's sample text when the user hasn't typed anything.</summary>
+    [Parameter] public bool UseSampleWhenEmpty { get; set; } = true;
+
+    private readonly string _uid = Guid.NewGuid().ToString("N")[..8];
+
+    // A clean side-profile car silhouette (roof centre, wheel-arch cutouts).
+    private const string CarPath =
+        "M14,100 L14,76 Q14,68 24,66 L66,64 Q80,40 110,40 L150,40 " +
+        "Q180,42 196,64 L232,70 Q238,71 238,80 L238,92 Q238,100 230,100 " +
+        "L222,100 A22,22 0 0 0 178,100 L80,100 A22,22 0 0 0 36,100 Z";
+
+    private static readonly Dictionary<string, (string Light, string Dark)> Grad = new()
+    {
+        ["fil-black"] = ("#4a4a4f", "#16161a"),
+        ["fil-white"] = ("#ffffff", "#d7dae0"),
+        ["fil-red"] = ("#ff5a44", "#c81f0c"),
+        ["fil-blue"] = ("#4f86ff", "#1741b8"),
+        ["fil-silver"] = ("#f2f4f7", "#9aa3b0"),
+        ["fil-glow"] = ("#d7ffe6", "#7bf2a8"),
+        ["fil-marble"] = ("#f4f4f2", "#8c9098"),
+        ["fil-wood"] = ("#d9a86a", "#8a5a2b"),
+    };
+
+    private string Light => Grad.TryGetValue(FilamentCss, out var g) ? g.Light : "#ff5a44";
+    private string Dark => Grad.TryGetValue(FilamentCss, out var g) ? g.Dark : "#c81f0c";
+
+    private string Line1Display =>
+        !string.IsNullOrWhiteSpace(Line1) ? Line1 : (UseSampleWhenEmpty ? Template.SampleLine1 : string.Empty);
+
+    private string Line2Display =>
+        !string.IsNullOrWhiteSpace(Line2) ? Line2 : (UseSampleWhenEmpty ? Template.SampleLine2 : string.Empty);
+}

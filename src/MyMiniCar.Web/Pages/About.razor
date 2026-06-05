@@ -1,0 +1,99 @@
+@page "/about"
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">How it works</span>
+        <h1 class="mt-3 mb-2">From photo to keyring</h1>
+        <p class="text-soft mx-auto" style="max-width: 32rem;">
+            No 3D modelling, no software, no waiting around. Here's how your car ends up on your keys.
+        </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="surface-card p-4 h-100">
+                <div class="strip-num mb-3"><i class="bi bi-cloud-arrow-up"></i></div>
+                <h3 class="h5 mb-2">1 · Upload</h3>
+                <p class="text-soft m-0" style="font-size: 0.9rem;">Pick any photo of your car in the Studio. We shape it into a car-tag silhouette and show you a live preview instantly.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="surface-card p-4 h-100">
+                <div class="strip-num mb-3"><i class="bi bi-sliders"></i></div>
+                <h3 class="h5 mb-2">2 · Customise</h3>
+                <p class="text-soft m-0" style="font-size: 0.9rem;">Choose from eight PLA filaments and add your name, plate or race number with a ready-made text template.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="surface-card p-4 h-100">
+                <div class="strip-num mb-3"><i class="bi bi-printer"></i></div>
+                <h3 class="h5 mb-2">3 · Printed & shipped</h3>
+                <p class="text-soft m-0" style="font-size: 0.9rem;">We print your tag to order on an FDM printer, attach the keyring, and ship it within 3–5 days.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Materials -->
+    <div class="surface-card blueprint-soft p-4 p-md-5 mb-5" style="border-radius: var(--radius-lg);">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-5">
+                <span class="eyebrow">Materials</span>
+                <h2 class="mt-2 mb-3">Real PLA filament</h2>
+                <p class="text-soft mb-0">
+                    Every keychain is printed in genuine PLA — a sturdy, lightweight bioplastic. Standard colours are
+                    included; glow, marble and wood-fill are our premium finishes for something special.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <div class="swatch-grid">
+                    @foreach (var f in Filaments.All)
+                    {
+                        <div class="swatch">
+                            <div class="swatch-chip @f.Css"></div>
+                            <div class="swatch-label">@f.Name</div>
+                            @if (f.IsPremium)
+                            {
+                                <div class="pill pill-primary mt-1" style="font-size: 0.56rem; padding: 0.15rem 0.45rem;">Premium</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specs -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3 col-6">
+            <div class="text-center surface-card p-4 h-100">
+                <div class="font-display text-primary-c" style="font-size: 2rem; font-weight: 800;">55mm</div>
+                <div class="field-label mt-1">Tag length</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="text-center surface-card p-4 h-100">
+                <div class="font-display text-primary-c" style="font-size: 2rem; font-weight: 800;">4mm</div>
+                <div class="field-label mt-1">Thickness</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="text-center surface-card p-4 h-100">
+                <div class="font-display text-primary-c" style="font-size: 2rem; font-weight: 800;">3–5d</div>
+                <div class="field-label mt-1">Made to order</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="text-center surface-card p-4 h-100">
+                <div class="font-display text-primary-c" style="font-size: 2rem; font-weight: 800;">100%</div>
+                <div class="field-label mt-1">Recyclable PLA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+        <h2 class="mb-3">Ready to make yours?</h2>
+        <a href="convert" class="btn-primary-c btn-lg"><i class="bi bi-magic"></i> Open the Studio</a>
+    </div>
+</div>

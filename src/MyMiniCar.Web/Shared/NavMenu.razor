@@ -1,0 +1,55 @@
+@inject CartService CartService
+@implements IDisposable
+
+<nav class="navbar navbar-expand-lg mmc-navbar">
+    <div class="container">
+        <a class="navbar-brand brand" href="">
+            <span class="brand-mark"><i class="bi bi-car-front-fill"></i></span>
+            MyMini<span>Car</span>
+        </a>
+
+        <button class="navbar-toggler border-0 px-0" type="button" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
+            <i class="bi @(collapseNavMenu ? "bi-list" : "bi-x-lg")" style="font-size: 1.7rem; color: var(--ink);"></i>
+        </button>
+
+        <div class="collapse navbar-collapse @(collapseNavMenu ? "" : "show")" id="navbarNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <NavLink class="nav-link nav-link-mmc" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">Home</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link nav-link-mmc" href="products" @onclick="CloseNavMenu">Shop</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link nav-link-mmc" href="convert" @onclick="CloseNavMenu">Studio</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link nav-link-mmc" href="about" @onclick="CloseNavMenu">How it works</NavLink>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-icons">
+            <a href="convert" class="btn-primary-c btn-sm-c d-none d-sm-inline-flex" @onclick="CloseNavMenu">
+                <i class="bi bi-magic"></i> Make yours
+            </a>
+            <button class="icon-btn" @onclick="ToggleCart" aria-label="Cart">
+                <i class="bi bi-bag"></i>
+                @if (CartService.GetCount() > 0)
+                {
+                    <span class="cart-badge">@CartService.GetCount()</span>
+                }
+            </button>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    protected override void OnInitialized() => CartService.OnChange += StateHasChanged;
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+    private void CloseNavMenu() => collapseNavMenu = true;
+    private void ToggleCart() => CartService.ToggleCart();
+    public void Dispose() => CartService.OnChange -= StateHasChanged;
+}

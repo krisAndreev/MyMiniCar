@@ -1,0 +1,28 @@
+## Ignore Visual Studio temporary files, build results, and crash dumps
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leasePublic/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Log]s/
+[Te]mp/
+
+# Rider / IntelliJ Project files
+.idea/
+*.sln.iml
+
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db

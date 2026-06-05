@@ -1,0 +1,175 @@
+@page "/products"
+@inject IProductService ProductService
+@inject CartService CartService
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">The Shop</span>
+        <h1 class="mt-3 mb-2">Keychains & accessories</h1>
+        <p class="text-soft mx-auto" style="max-width: 30rem;">
+            Ready-made styles and add-ons — or head to the Studio to design your own.
+        </p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+        <div class="d-flex flex-wrap gap-2">
+            <button class="chip @(string.IsNullOrEmpty(_selectedCategory) ? "active" : "")" @onclick="() => FilterCategory(null)">All</button>
+            @foreach (var cat in _categories)
+            {
+                var c = cat;
+                <button class="chip @(_selectedCategory == c ? "active" : "")" @onclick="() => FilterCategory(c)">@c</button>
+            }
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="field-label mb-0">Sort</span>
+            <select class="select-c" @onchange="SortChanged">
+                <option value="default">Featured</option>
+                <option value="price-low">Price: low to high</option>
+                <option value="price-high">Price: high to low</option>
+            </select>
+        </div>
+    </div>
+
+    @if (_filtered is null)
+    {
+        <div class="text-center py-5"><div class="mmc-loader mx-auto"></div></div>
+    }
+    else if (!_filtered.Any())
+    {
+        <div class="text-center py-5 text-soft">
+            <i class="bi bi-search" style="font-size: 2.2rem; color: var(--ink-faint);"></i>
+            <p class="mt-3">Nothing matches that filter.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var p in _filtered)
+            {
+                <div class="col-sm-6 col-lg-4">
+                    <div class="kc-card" style="cursor: pointer;" @onclick="() => OpenDetail(p)">
+                        <div class="kc-thumb @p.TileClass">
+                            <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                            <span class="kc-badge">@p.Category</span>
+                            <div class="kc-overlay" @onclick:stopPropagation>
+                                <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">Add to cart</button>
+                            </div>
+                        </div>
+                        <div class="kc-body">
+                            <span class="kc-cat">@p.DefaultMaterial</span>
+                            <h3 class="kc-name">@p.Name</h3>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="kc-price">@p.Price.ToString("C2")</span>
+                                <span class="text-faint" style="font-size: 0.82rem;">Details <i class="bi bi-chevron-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Detail modal -->
+@if (_selected is not null)
+{
+    <div class="modal-mmc-backdrop" @onclick="CloseDetail">
+        <div class="modal-mmc" @onclick:stopPropagation>
+            <div class="modal-mmc-head">
+                <span class="eyebrow">@_selected.Category</span>
+                <button class="close-x" @onclick="CloseDetail"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-mmc-body">
+                <div class="row gy-4">
+                    <div class="col-md-6">
+                        <div class="modal-photo @_selected.TileClass">
+                            <i class="bi bi-car-front-fill" style="font-size: 5rem; color: rgba(255,255,255,0.9);"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex flex-column">
+                        <h2 class="mb-1">@_selected.Name</h2>
+                        <span class="font-display text-primary-c mb-3" style="font-size: 1.5rem; font-weight: 700;">@_selected.Price.ToString("C2")</span>
+                        <p class="text-soft mb-4" style="font-size: 0.92rem;">@_selected.Description</p>
+
+                        <label class="field-label">Filament finish</label>
+                        <div class="swatch-grid mb-4">
+                            @foreach (var f in Filaments.All)
+                            {
+                                var fil = f;
+                                <div class="swatch @(_selectedMaterial == fil.Name ? "selected" : "")" @onclick="() => _selectedMaterial = fil.Name">
+                                    <div class="swatch-chip @fil.Css"></div>
+                                    <div class="swatch-label">@fil.Name</div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="summary-grid mb-4">
+                            <div><div class="lbl">Size</div><div class="val">@_selected.Dimensions</div></div>
+                            <div><div class="lbl">Made to order</div><div class="val">3–5 days</div></div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-auto">
+                            <button class="btn-primary-c btn-block" @onclick="AddSelected">Add to cart</button>
+                            <a href="convert" class="btn-ghost-c"><i class="bi bi-magic"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IEnumerable<Product>? _allProducts;
+    private IEnumerable<Product>? _filtered;
+    private List<string> _categories = new();
+    private string? _selectedCategory;
+    private string _sortBy = "default";
+
+    private Product? _selected;
+    private string _selectedMaterial = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _allProducts = await ProductService.GetProductsAsync();
+        _filtered = _allProducts;
+        _categories = _allProducts.Select(p => p.Category).Distinct().ToList();
+    }
+
+    private void FilterCategory(string? category) { _selectedCategory = category; ApplyFilters(); }
+    private void SortChanged(ChangeEventArgs e) { _sortBy = e.Value?.ToString() ?? "default"; ApplyFilters(); }
+
+    private void ApplyFilters()
+    {
+        if (_allProducts is null) return;
+        var items = _allProducts.AsEnumerable();
+        if (!string.IsNullOrEmpty(_selectedCategory))
+            items = items.Where(p => p.Category == _selectedCategory);
+        items = _sortBy switch
+        {
+            "price-low" => items.OrderBy(p => p.Price),
+            "price-high" => items.OrderByDescending(p => p.Price),
+            _ => items
+        };
+        _filtered = items.ToList();
+    }
+
+    private void OpenDetail(Product product)
+    {
+        _selected = product;
+        _selectedMaterial = product.DefaultMaterial;
+    }
+
+    private void CloseDetail() => _selected = null;
+    private void QuickAdd(Product product) => CartService.AddItem(product, product.DefaultMaterial);
+
+    private void AddSelected()
+    {
+        if (_selected is not null)
+        {
+            CartService.AddItem(_selected, _selectedMaterial);
+            CloseDetail();
+        }
+    }
+}

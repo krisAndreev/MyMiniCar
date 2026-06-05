@@ -1,0 +1,139 @@
+@page "/"
+@inject IProductService ProductService
+@inject CartService CartService
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-blob a"></div>
+    <div class="hero-blob b"></div>
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6">
+                <span class="eyebrow">3D-printed · made to order</span>
+                <h1 class="hero-title mt-3">Turn your car into a <span class="hl">keychain</span>.</h1>
+                <p class="hero-lead">
+                    Upload a photo of your ride, pick a filament, add your name or plate — and we 3D-print it
+                    as a pocket-sized keyring tag. Preview it live before you buy.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="convert" class="btn-primary-c btn-lg"><i class="bi bi-magic"></i> Start designing</a>
+                    <a href="products" class="btn-ghost-c btn-lg">Browse the shop</a>
+                </div>
+                <div class="d-flex flex-wrap gap-4 mt-4 pt-2 text-soft" style="font-size: 0.86rem;">
+                    <span><i class="bi bi-star-fill text-accent-c me-1"></i>4.9/5 from 2,000+ drivers</span>
+                    <span><i class="bi bi-truck me-1"></i>Worldwide shipping</span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-stage">
+                    <div class="badge-float" style="top: 1.5rem; left: -0.5rem;"><i class="bi bi-palette-fill text-primary-c"></i> 8 filament colours</div>
+                    <div class="badge-float" style="bottom: 1.5rem; right: -0.5rem;"><i class="bi bi-lightning-charge-fill text-accent-c"></i> Live preview</div>
+                    <div class="preview-canvas blueprint-soft" style="border-radius: var(--radius); aspect-ratio: 5/4;">
+                        <KeychainPreview FilamentCss="fil-red" Template='TextTemplates.ById("plate")' Line1="MINI 01" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works strip -->
+<section class="strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="strip-item">
+                    <div class="strip-num">01</div>
+                    <div><h5>Upload your car</h5><p>Snap or pick a photo. Any car, any angle — we shape it into a car-tag silhouette.</p></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="strip-item">
+                    <div class="strip-num">02</div>
+                    <div><h5>Customise & preview</h5><p>Choose a PLA filament and add text. See exactly how it'll look, live.</p></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="strip-item">
+                    <div class="strip-num">03</div>
+                    <div><h5>We print & ship</h5><p>Printed to order in 3–5 days and sent to your door, keyring attached.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured -->
+<section class="section">
+    <div class="container">
+        <div class="section-head d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div>
+                <span class="eyebrow">Fan favourites</span>
+                <h2 class="mt-2 mb-0">Popular keychains</h2>
+            </div>
+            <a href="products" class="link-arrow">View all <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-4">
+            @if (_featured is null)
+            {
+                <div class="col-12 text-center py-5"><div class="mmc-loader mx-auto"></div></div>
+            }
+            else
+            {
+                @foreach (var p in _featured)
+                {
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="kc-card">
+                            <div class="kc-thumb @p.TileClass">
+                                <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                                <span class="kc-badge">@p.Category</span>
+                                <div class="kc-overlay">
+                                    <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">Add to cart</button>
+                                </div>
+                            </div>
+                            <div class="kc-body">
+                                <span class="kc-cat">@p.DefaultMaterial</span>
+                                <h3 class="kc-name">@p.Name</h3>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="kc-price">@p.Price.ToString("C2")</span>
+                                    <a href="convert" class="link-arrow" style="font-size: 0.84rem;">Customise <i class="bi bi-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Studio CTA -->
+<section class="section pt-0">
+    <div class="container">
+        <div class="surface-card blueprint-soft p-4 p-md-5" style="border-radius: var(--radius-lg); overflow: hidden;">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-8">
+                    <span class="eyebrow">The Studio</span>
+                    <h2 class="mt-2 mb-2">Your car, your colours, your words.</h2>
+                    <p class="text-soft mb-0" style="max-width: 36rem;">
+                        Jump into the Studio, upload a photo and design a one-of-a-kind keychain in under a minute.
+                        Nothing to install — it all happens right in your browser.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Open the Studio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private IEnumerable<Product>? _featured;
+
+    protected override async Task OnInitializedAsync()
+        => _featured = await ProductService.GetFeaturedProductsAsync();
+
+    private void QuickAdd(Product product) => CartService.AddItem(product, product.DefaultMaterial);
+}
