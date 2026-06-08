@@ -1,5 +1,4 @@
 @page "/convert"
-@using System.IO
 @inject CartService CartService
 
 <div class="container py-5">
@@ -33,30 +32,25 @@
 
                 @if (_step == 0)
                 {
-                    <div class="studio-step-title"><span class="studio-step-num">1</span> Upload your car</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">A clear side-on photo works best — bold colours and a plain background print sharpest.</p>
+                    <div class="studio-step-title"><span class="studio-step-num">1</span> Pick a colour</div>
+                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Choose the body paint for your Golf. The preview updates live.</p>
 
-                    <div class="dropzone @(_drag ? "drag" : "")"
-                         @ondragenter="() => _drag = true" @ondragleave="() => _drag = false"
-                         @ondragover:preventDefault @ondrop="() => _drag = false">
-                        <InputFile OnChange="HandleFile" accept="image/*" />
-                        <div class="dropzone-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-                        @if (string.IsNullOrEmpty(_fileName))
+                    <label class="field-label">Body colour</label>
+                    <div class="golf-swatch-row">
+                        @foreach (var c in _carColors)
                         {
-                            <p class="m-0 fw-semibold">Drag & drop or click to browse</p>
-                            <p class="text-faint m-0 mt-1" style="font-size: 0.8rem;">PNG or JPG · up to 10 MB</p>
+                            var col = c;
+                            <button type="button"
+                                    class="golf-swatch @(_carColor == col ? "selected" : "")"
+                                    style="background:@col"
+                                    @onclick="() => _carColor = col"
+                                    aria-label="@col"></button>
                         }
-                        else
-                        {
-                            <p class="m-0 filename"><i class="bi bi-check-circle-fill me-1"></i>@_fileName</p>
-                            <p class="text-faint m-0 mt-1" style="font-size: 0.8rem;">Click to replace</p>
-                        }
+                        <label class="golf-swatch golf-swatch-custom" style="background:@_carColor">
+                            <input type="color" value="@_carColor"
+                                   @oninput="e => _carColor = e.Value?.ToString() ?? _carColor" />
+                        </label>
                     </div>
-
-                    @if (_error is not null)
-                    {
-                        <div class="alert-c"><i class="bi bi-exclamation-triangle-fill"></i>@_error</div>
-                    }
                 }
                 else if (_step == 1)
                 {
@@ -138,7 +132,7 @@
                     }
                     @if (_step < 3)
                     {
-                        <button class="btn-primary-c btn-block" disabled="@(_step == 0 && !_config.HasImage)" @onclick="Next">
+                        <button class="btn-primary-c btn-block" @onclick="Next">
                             Continue <i class="bi bi-arrow-right"></i>
                         </button>
                     }
@@ -162,18 +156,7 @@
                     </span>
                 </div>
                 <div class="preview-canvas blueprint-soft">
-                    <KeychainPreview ImageDataUrl="@_config.ImageDataUrl"
-                                     FilamentCss="@_config.Filament.Css"
-                                     Template="_config.Template"
-                                     Line1="@_config.Line1"
-                                     Line2="@_config.Line2" />
-                    @if (!_config.HasImage)
-                    {
-                        <div class="preview-empty" style="position:absolute; bottom: 1.2rem;">
-                            <i class="bi bi-image"></i>
-                            Upload a photo to see your car on the tag
-                        </div>
-                    }
+                    <GolfViewer Color="@_carColor" />
                 </div>
                 <div class="preview-foot">
                     <span><i class="bi bi-printer me-1"></i>@_config.FilamentName PLA</span>
@@ -185,13 +168,16 @@
 </div>
 
 @code {
-    private readonly string[] _steps = { "Upload", "Style", "Personalize", "Review" };
+    private readonly string[] _steps = { "Colour", "Style", "Personalize", "Review" };
     private int _step = 0;
-    private bool _drag;
     private bool _added;
-    private string _fileName = string.Empty;
-    private string? _error;
+    private string _carColor = "#2D6CFF";
     private readonly KeychainConfig _config = new();
+
+    private readonly string[] _carColors =
+    {
+        "#16161a", "#f4f6f9", "#c81f0c", "#1741b8", "#9aa3b0", "#1d7a46", "#e0a020",
+    };
 
     private string StepClass(int idx) => idx == _step ? "active" : idx < _step ? "done" : "";
 
@@ -203,42 +189,6 @@
             return _config.Template.HasSecondLine && !string.IsNullOrWhiteSpace(_config.Line2)
                 ? $"{_config.Line1} · {_config.Line2}"
                 : _config.Line1;
-        }
-    }
-
-    private async Task HandleFile(InputFileChangeEventArgs e)
-    {
-        _error = null;
-        var file = e.File;
-        if (file is null) return;
-
-        if (!file.ContentType.StartsWith("image/"))
-        {
-            _error = "That's not an image — please choose a PNG or JPG.";
-            return;
-        }
-
-        const long max = 10 * 1024 * 1024;
-        if (file.Size > max)
-        {
-            _error = "Image is too large — please keep it under 10 MB.";
-            return;
-        }
-
-        try
-        {
-            // Resize in the browser to keep the data URL small and fast.
-            var resized = await file.RequestImageFileAsync("image/jpeg", 1024, 1024);
-            await using var stream = resized.OpenReadStream(max);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            var b64 = System.Convert.ToBase64String(ms.ToArray());
-            _config.ImageDataUrl = $"data:image/jpeg;base64,{b64}";
-            _fileName = file.Name;
-        }
-        catch
-        {
-            _error = "We couldn't read that image. Try a different one.";
         }
     }
 

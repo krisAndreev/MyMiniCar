@@ -1,0 +1,62 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@*
+   3D Golf 4 preview. Loads the glTF via a Three.js interop module, supports
+   drag-orbit + zoom, and live body recolouring driven by the Color parameter.
+   Model is hardcoded for now.
+*@
+
+<div class="golf-viewer">
+    <div class="golf-stage" @ref="_stage"></div>
+    <p class="text-faint m-0 golf-hint">
+        <i class="bi bi-arrows-move"></i> Drag to rotate · scroll to zoom
+    </p>
+</div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "#2D6CFF";
+
+    private ElementReference _stage;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _viewer;
+    private string? _applied;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/golf-viewer.js");
+        _viewer = await _module.InvokeAsync<IJSObjectReference>(
+            "createViewer", _stage, "models/golf/untitled.gltf");
+        await ApplyColor();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_viewer is not null && Color != _applied)
+            await ApplyColor();
+    }
+
+    private async Task ApplyColor()
+    {
+        if (_viewer is null) return;
+        await _viewer.InvokeVoidAsync("setColor", Color);
+        _applied = Color;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_viewer is not null)
+            {
+                await _viewer.InvokeVoidAsync("dispose");
+                await _viewer.DisposeAsync();
+            }
+            if (_module is not null)
+                await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException) { /* circuit gone; nothing to clean */ }
+    }
+}
