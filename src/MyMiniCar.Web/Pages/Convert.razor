@@ -32,8 +32,22 @@
 
                 @if (_step == 0)
                 {
-                    <div class="studio-step-title"><span class="studio-step-num">1</span> Pick a colour</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Choose the body paint for your Golf. The preview updates live.</p>
+                    <div class="studio-step-title"><span class="studio-step-num">1</span> Pick your car</div>
+                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Choose the car model and body paint. The preview updates live.</p>
+
+                    <label class="field-label">Car model</label>
+                    <div class="car-model-grid mb-4">
+                        @foreach (var car in CarCatalog.All)
+                        {
+                            var model = car;
+                            <button type="button"
+                                    class="car-model-card @(_car.Key == model.Key ? "selected" : "")"
+                                    @onclick="() => SelectCar(model)">
+                                <span class="car-model-name">@model.Name</span>
+                                <span class="car-model-meta">3D preview ready</span>
+                            </button>
+                        }
+                    </div>
 
                     <label class="field-label">Body colour</label>
                     <div class="golf-swatch-row">
@@ -110,6 +124,7 @@
                     <p class="text-soft mb-4" style="font-size: 0.92rem;">Looking good. Here's the spec of your custom keychain.</p>
 
                     <div class="summary-grid mb-4">
+                        <div><div class="lbl">Car</div><div class="val">@_car.Name</div></div>
                         <div><div class="lbl">Filament</div><div class="val">@_config.FilamentName</div></div>
                         <div><div class="lbl">Text</div><div class="val">@SummaryText</div></div>
                         <div><div class="lbl">Size</div><div class="val">55mm × 30mm × 4mm</div></div>
@@ -156,10 +171,10 @@
                     </span>
                 </div>
                 <div class="preview-canvas blueprint-soft">
-                    <GolfViewer Color="@_carColor" />
+                    <GolfViewer @key="_car.Key" Color="@_carColor" ModelUrl="@_car.GltfPath" />
                 </div>
                 <div class="preview-foot">
-                    <span><i class="bi bi-printer me-1"></i>@_config.FilamentName PLA</span>
+                    <span><i class="bi bi-printer me-1"></i>@_car.Name / @_config.FilamentName PLA</span>
                     <span class="mono">@_config.Price.ToString("C2")</span>
                 </div>
             </div>
@@ -168,10 +183,11 @@
 </div>
 
 @code {
-    private readonly string[] _steps = { "Colour", "Style", "Personalize", "Review" };
+    private readonly string[] _steps = { "Car", "Style", "Personalize", "Review" };
     private int _step = 0;
     private bool _added;
     private string _carColor = "#2D6CFF";
+    private CarModel _car = CarCatalog.Default;
     private readonly KeychainConfig _config = new();
 
     private readonly string[] _carColors =
@@ -198,6 +214,12 @@
         if (!_config.Template.HasSecondLine) _config.Line2 = string.Empty;
     }
 
+    private void SelectCar(CarModel car)
+    {
+        _car = car;
+        _added = false;
+    }
+
     private void Next() { if (_step < 3) _step++; }
     private void Back() { _added = false; if (_step > 0) _step--; }
 
@@ -206,8 +228,8 @@
         var product = new Product
         {
             Id = $"custom-{Guid.NewGuid():N}",
-            Name = "Custom Car Keychain",
-            Description = $"A 3D-printed car keychain in {_config.FilamentName} PLA"
+            Name = $"Custom {_car.Name} Keychain",
+            Description = $"A 3D-printed {_car.Name} keychain in {_config.FilamentName} PLA"
                 + (string.IsNullOrWhiteSpace(_config.Line1) ? "." : $", engraved \"{SummaryText}\"."),
             Price = _config.Price,
             ImageUrl = _config.ImageDataUrl ?? string.Empty,

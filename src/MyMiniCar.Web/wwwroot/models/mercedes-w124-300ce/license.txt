@@ -1,0 +1,11 @@
+Model Information:
+* title:	Mercedes w124 300ce
+* source:	https://sketchfab.com/3d-models/mercedes-w124-300ce-54a881bc475f4aa089974a22e018c1d8
+* author:	timmiethizz (https://sketchfab.com/timmiethizz)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Mercedes w124 300ce" (https://sketchfab.com/3d-models/mercedes-w124-300ce-54a881bc475f4aa089974a22e018c1d8) by timmiethizz (https://sketchfab.com/timmiethizz) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -3,9 +3,8 @@
 @inject IJSRuntime JS
 
 @*
-   3D Golf 4 preview. Loads the glTF via a Three.js interop module, supports
+   3D car preview. Loads the glTF via a Three.js interop module, supports
    drag-orbit + zoom, and live body recolouring driven by the Color parameter.
-   Model is hardcoded for now.
 *@
 
 <div class="golf-viewer">
@@ -17,6 +16,7 @@
 
 @code {
     [Parameter] public string Color { get; set; } = "#2D6CFF";
+    [Parameter] public string ModelUrl { get; set; } = "models/golf/untitled.gltf";
 
     private ElementReference _stage;
     private IJSObjectReference? _module;
@@ -28,7 +28,7 @@
         if (!firstRender) return;
         _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/golf-viewer.js");
         _viewer = await _module.InvokeAsync<IJSObjectReference>(
-            "createViewer", _stage, "models/golf/untitled.gltf");
+            "createViewer", _stage, ModelUrl);
         await ApplyColor();
     }
 
