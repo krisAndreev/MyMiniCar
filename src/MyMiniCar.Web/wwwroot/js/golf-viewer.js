@@ -5,7 +5,29 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+function showOverlay(container, msg) {
+    const el = document.createElement('div');
+    el.className = 'golf-overlay';
+    el.textContent = msg;
+    container.appendChild(el);
+    return el;
+}
+
+function webglSupported() {
+    try {
+        const c = document.createElement('canvas');
+        return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+        return false;
+    }
+}
+
 export function createViewer(container, modelUrl) {
+    if (!webglSupported()) {
+        showOverlay(container, 'WebGL is not available in this browser. Enable hardware acceleration (or update your browser) to see the 3D preview.');
+        return { setColor() {}, dispose() {} };
+    }
+
     const state = {
         container,
         renderer: null,
@@ -109,7 +131,10 @@ export function createViewer(container, modelUrl) {
             controls.update();
         },
         undefined,
-        (err) => console.error('[golf-viewer] load failed:', err)
+        (err) => {
+            console.error('[golf-viewer] load failed:', err);
+            showOverlay(container, 'Could not load the 3D model. Check your connection and reload.');
+        }
     );
 
     const animate = () => {

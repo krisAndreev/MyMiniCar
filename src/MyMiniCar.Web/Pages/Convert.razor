@@ -156,7 +156,7 @@
                     </span>
                 </div>
                 <div class="preview-canvas blueprint-soft">
-                    <GolfViewer Color="@_carColor" />
+                    <GolfViewer Color="@_carColor" ModelUrl="@_car.GltfPath" />
                 </div>
                 <div class="preview-foot">
                     <span><i class="bi bi-printer me-1"></i>@_config.FilamentName PLA</span>
@@ -172,6 +172,7 @@
     private int _step = 0;
     private bool _added;
     private string _carColor = "#2D6CFF";
+    private readonly CarModel _car = CarCatalog.Default;   // future: bound to a car dropdown
     private readonly KeychainConfig _config = new();
 
     private readonly string[] _carColors =

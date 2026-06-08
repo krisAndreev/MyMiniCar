@@ -17,6 +17,7 @@
 
 @code {
     [Parameter] public string Color { get; set; } = "#2D6CFF";
+    [Parameter] public string ModelUrl { get; set; } = "models/golf/untitled.gltf";
 
     private ElementReference _stage;
     private IJSObjectReference? _module;
@@ -28,7 +29,7 @@
         if (!firstRender) return;
         _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/golf-viewer.js");
         _viewer = await _module.InvokeAsync<IJSObjectReference>(
-            "createViewer", _stage, "models/golf/untitled.gltf");
+            "createViewer", _stage, ModelUrl);
         await ApplyColor();
     }
 

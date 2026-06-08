@@ -23,12 +23,12 @@
     <link href="MyMiniCar.Web.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <!-- Three.js module resolution (used by the 3D Golf preview) -->
+    <!-- Three.js module resolution (vendored locally — no CDN dependency) -->
     <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "/lib/three/three.module.js",
+        "three/addons/": "/lib/three/addons/"
       }
     }
     </script>
