@@ -1,0 +1,11 @@
+Model Information:
+* title:	2000 Audi A4
+* source:	https://sketchfab.com/3d-models/2000-audi-a4-22f072849b6a409ebac3a0b13dbb099a
+* author:	tonielpro520 (https://sketchfab.com/tonielpro520)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2000 Audi A4" (https://sketchfab.com/3d-models/2000-audi-a4-22f072849b6a409ebac3a0b13dbb099a) by tonielpro520 (https://sketchfab.com/tonielpro520) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

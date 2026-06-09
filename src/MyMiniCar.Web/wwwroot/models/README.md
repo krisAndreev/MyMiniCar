@@ -10,7 +10,22 @@ models/
     untitled.gltf        # the glTF (references the .bin + textures by relative name)
     untitled.bin         # binary geometry buffer
     *_diff.png           # diffuse textures referenced by the glTF
+  audi-a4-2000/
+    scene.gltf
+    scene.bin
+  vw-passat/
+    scene.gltf
+    scene.bin
+    textures/
 ```
+
+## Current models
+
+- VW Golf IV (`golf`)
+- 2000 Audi A4 (`audi-a4-2000`)
+- Volkswagen Passat (`vw-passat`)
+- Mercedes W124 300CE (`mercedes-w124-300ce`)
+- 2005 Skoda Octavia (`skoda-octavia-2005`)
 
 ## Adding a new model
 
@@ -23,8 +38,8 @@ models/
    new CarModel("polo", "VW Polo", "models/polo/scene.gltf"),
    ```
 
-3. The car dropdown (future work) binds to `CarCatalog.All`; selecting an entry
-   passes its `GltfPath` to `<GolfViewer ModelUrl="..." />`.
+3. The car picker binds to `CarCatalog.All`; selecting an entry passes its
+   `GltfPath` to `<GolfViewer ModelUrl="..." />`.
 
 ## Notes
 - Three.js is vendored locally at `wwwroot/lib/three/` (no CDN dependency).
