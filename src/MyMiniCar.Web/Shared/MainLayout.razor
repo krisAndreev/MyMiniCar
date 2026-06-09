@@ -148,7 +148,7 @@
     private void ProceedToCheckout()
     {
         CloseCart();
-        System.Console.WriteLine("Checkout requested.");
+        Navigation.NavigateTo("checkout");
     }
 
     public void Dispose() => CartService.OnChange -= StateHasChanged;

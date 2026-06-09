@@ -54,6 +54,68 @@ Located in `/convert`, the **Studio 3D** workspace lets users simulate convertin
 
 ---
 
+## 💳 Payments (Stripe Checkout)
+
+Card payments are handled by **Stripe Checkout**. Because a Blazor WASM app runs entirely in
+the browser, it can never hold the Stripe **secret key** — so a tiny backend API
+(`src/MyMiniCar.Api`) creates the Checkout Session and the browser is only ever handed a
+redirect URL.
+
+```text
+Browser (WASM)  →  MyMiniCar.Api  →  Stripe  →  hosted card page  →  /order-confirmed
+```
+
+**Flow:** Cart → `Checkout.razor` (shipping form + order summary) → API creates a Stripe
+session → redirect to Stripe's hosted card page → on success Stripe returns the user to
+`/order-confirmed?session_id=…`, which verifies the payment via the API and clears the cart.
+Free shipping over $40 is applied automatically (a flat $4.90 below that).
+
+### Configuring keys
+
+The publishable key is harmless in the client; the **secret key never lives in source control**
+— it's stored in .NET user-secrets:
+
+```bash
+cd src/MyMiniCar.Api
+dotnet user-secrets set "Stripe:SecretKey" "sk_test_..."
+```
+
+The WASM client reads the API location from `src/MyMiniCar.Web/wwwroot/appsettings.json`
+(`ApiBaseUrl`, default `http://localhost:5230`). CORS origins are configured in the API's
+`appsettings.json`.
+
+### Running with payments
+
+Run **both** projects (two terminals):
+
+```bash
+# Terminal 1 — payments API (http://localhost:5230)
+dotnet run --project src/MyMiniCar.Api/MyMiniCar.Api.csproj
+
+# Terminal 2 — storefront (http://localhost:5229)
+dotnet run --project src/MyMiniCar.Web/MyMiniCar.Web.csproj
+```
+
+In **test mode**, complete checkout with card `4242 4242 4242 4242`, any future expiry, any CVC.
+
+### Testing cards 
+
+4000 0000 0000 0002	Generic decline ("Your card was declined")
+4000 0000 0000 9995	Decline — insufficient funds
+4000 0000 0000 9987	Decline — lost card
+4000 0000 0000 0069	Expired card
+4000 0000 0000 0127	Incorrect CVC
+4000 0000 0000 0119	Processing error
+4000 0027 6000 3184	Forces a 3D Secure authentication popup
+
+### Going live later
+
+1. Activate the live account in the Stripe dashboard (identity + IBAN).
+2. Swap the user-secret to the **live** secret key (`sk_live_...`).
+3. Deploy `MyMiniCar.Api` somewhere with HTTPS and point `ApiBaseUrl` at it.
+
+---
+
 ## 🚀 Future Integrations
 
 - **Database (Supabase)**: Replace `MockProductService` in `Program.cs` with a client implementing `IProductService` communicating with your Supabase database endpoints.

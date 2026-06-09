@@ -1,0 +1,102 @@
+@page "/order-confirmed"
+@inject CartService CartService
+@inject CheckoutService CheckoutService
+@inject NavigationManager Navigation
+
+<div class="container py-5">
+    <div class="studio-panel text-center mx-auto" style="max-width: 34rem;">
+        @if (_loading)
+        {
+            <div class="py-4">
+                <span class="spinner-dark"></span>
+                <p class="text-soft mt-3 mb-0">Confirming your payment…</p>
+            </div>
+        }
+        else if (_paid)
+        {
+            <div class="confirm-badge"><i class="bi bi-check-lg"></i></div>
+            <h1 class="mt-4 mb-2">Thank you!</h1>
+            <p class="text-soft">
+                Your order is confirmed@(string.IsNullOrEmpty(_email) ? "" : $" — a receipt is on its way to {_email}").
+                We'll start printing your keychain right away.
+            </p>
+            @if (_amount is not null)
+            {
+                <div class="confirm-amount mt-3">@_amount</div>
+            }
+            <div class="d-flex gap-2 justify-content-center mt-4">
+                <button class="btn-primary-c" @onclick="@(() => Navigation.NavigateTo("products"))">Continue shopping</button>
+                <button class="btn-ghost-c" @onclick="@(() => Navigation.NavigateTo("convert"))">Design another</button>
+            </div>
+        }
+        else
+        {
+            <div class="confirm-badge confirm-badge-warn"><i class="bi bi-hourglass-split"></i></div>
+            <h1 class="mt-4 mb-2">@_title</h1>
+            <p class="text-soft">@_message</p>
+            <button class="btn-primary-c mt-3" @onclick="@(() => Navigation.NavigateTo("checkout"))">Back to checkout</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "session_id")]
+    public string? SessionId { get; set; }
+
+    private bool _loading = true;
+    private bool _paid;
+    private string? _email;
+    private string? _amount;
+    private string _title = "Payment not completed";
+    private string _message = "We couldn't confirm a successful payment for this order.";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(SessionId))
+        {
+            _loading = false;
+            _title = "No order found";
+            _message = "This page is shown after a successful checkout.";
+            return;
+        }
+
+        var session = await CheckoutService.GetSessionAsync(SessionId);
+        _loading = false;
+
+        if (session is null)
+        {
+            _title = "Couldn't verify order";
+            _message = "We couldn't reach the payments service to confirm your order. If you were charged, your receipt email is the source of truth.";
+            return;
+        }
+
+        if (string.Equals(session.PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase))
+        {
+            _paid = true;
+            _email = session.Email;
+            _amount = FormatAmount(session.AmountTotal, session.Currency);
+            CartService.ClearCart();
+        }
+        else
+        {
+            _title = "Payment pending";
+            _message = "Your payment hasn't completed yet. If you just paid, give it a moment and refresh.";
+        }
+    }
+
+    private static string? FormatAmount(long? minorUnits, string? currency)
+    {
+        if (minorUnits is null) return null;
+        var value = minorUnits.Value / 100m;
+        var symbol = currency?.ToUpperInvariant() switch
+        {
+            "USD" => "$",
+            "EUR" => "€",
+            "BGN" => "лв.",
+            "GBP" => "£",
+            _ => ""
+        };
+        return $"{symbol}{value:0.00}";
+    }
+}

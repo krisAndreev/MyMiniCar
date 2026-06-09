@@ -13,4 +13,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IProductService, MockProductService>();
 builder.Services.AddSingleton<CartService>();
 
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5230";
+builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
+
 await builder.Build().RunAsync();
