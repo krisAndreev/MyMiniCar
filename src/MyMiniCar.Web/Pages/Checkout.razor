@@ -1,0 +1,206 @@
+@page "/checkout"
+@inject CartService CartService
+@inject CheckoutService CheckoutService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="eyebrow">Checkout</span>
+        <h1 class="mt-3 mb-2">Almost there</h1>
+        <p class="text-soft mx-auto" style="max-width: 30rem;">
+            Enter your shipping details, then pay securely with card. We print to order in 3–5 days.
+        </p>
+    </div>
+
+    @if (!CartService.Items.Any())
+    {
+        <div class="studio-panel text-center py-5 mx-auto" style="max-width: 30rem;">
+            <i class="bi bi-bag" style="font-size: 2.4rem; color: var(--ink-faint);"></i>
+            <p class="mt-3 text-soft">Your cart is empty.</p>
+            <button class="btn-primary-c mt-2" @onclick="@(() => Navigation.NavigateTo("products"))">Browse keychains</button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 g-lg-5">
+            <!-- Details form -->
+            <div class="col-lg-7">
+                <div class="studio-panel">
+                    @if (Canceled == "true")
+                    {
+                        <div class="alert-c mb-4" style="background: rgba(255,74,46,0.08); color: var(--accent-600); border-color: rgba(255,74,46,0.3);">
+                            <i class="bi bi-info-circle"></i> Payment was canceled — your cart is still here whenever you're ready.
+                        </div>
+                    }
+                    @if (_error is not null)
+                    {
+                        <div class="alert-c mb-4" style="background: rgba(255,74,46,0.08); color: var(--accent-600); border-color: rgba(255,74,46,0.3);">
+                            <i class="bi bi-exclamation-triangle"></i> @_error
+                        </div>
+                    }
+
+                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-truck"></i></span> Shipping details</div>
+
+                    <label class="field-label">Email</label>
+                    <input class="input-c mb-3" type="email" placeholder="you@email.com" @bind="_email" @bind:event="oninput" />
+
+                    <label class="field-label">Full name</label>
+                    <input class="input-c mb-3" placeholder="Jane Driver" @bind="_name" @bind:event="oninput" />
+
+                    <label class="field-label">Address</label>
+                    <input class="input-c mb-3" placeholder="Street and number" @bind="_address" @bind:event="oninput" />
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="field-label">City</label>
+                            <input class="input-c" placeholder="City" @bind="_city" @bind:event="oninput" />
+                        </div>
+                        <div class="col-6">
+                            <label class="field-label">Postal code</label>
+                            <input class="input-c" placeholder="1000" @bind="_postal" @bind:event="oninput" />
+                        </div>
+                    </div>
+
+                    <label class="field-label mt-3">Country</label>
+                    <input class="input-c" placeholder="Bulgaria" @bind="_country" @bind:event="oninput" />
+
+                    <button class="btn-accent-c btn-block btn-lg mt-4" disabled="@(_busy || !CanPay)" @onclick="Pay">
+                        @if (_busy)
+                        {
+                            <span class="spinner-c"></span> <span>Redirecting to secure checkout…</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-lock-fill"></i>
+                            <span>Pay @Total.ToString("C2")</span>
+                        }
+                    </button>
+                    <p class="text-center text-faint mt-3 mb-0" style="font-size: 0.74rem;">
+                        <i class="bi bi-shield-lock"></i> Payments processed securely by Stripe. Test mode — use card 4242 4242 4242 4242.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Order summary -->
+            <div class="col-lg-5">
+                <div class="studio-panel">
+                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-bag"></i></span> Order summary</div>
+
+                    <div class="order-lines">
+                        @foreach (var item in CartService.Items)
+                        {
+                            <div class="order-line">
+                                <div class="order-line-img @item.Product.TileClass">
+                                    @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                                    {
+                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" />
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-car-front-fill"></i>
+                                    }
+                                    <span class="order-line-qty">@item.Quantity</span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="order-line-name">@item.Product.Name</div>
+                                    <div class="text-faint" style="font-size: 0.78rem;">@item.SelectedMaterial</div>
+                                </div>
+                                <div class="order-line-price">@((item.Product.Price * item.Quantity).ToString("C2"))</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="order-totals">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-soft">Subtotal</span>
+                            <span>@Subtotal.ToString("C2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-soft">Shipping</span>
+                            <span>@(Shipping == 0 ? "Free" : Shipping.ToString("C2"))</span>
+                        </div>
+                        <div class="d-flex justify-content-between order-grand">
+                            <span>Total</span>
+                            <span>@Total.ToString("C2")</span>
+                        </div>
+                    </div>
+
+                    @if (Subtotal < FreeShippingThreshold)
+                    {
+                        <p class="text-faint text-center mt-3 mb-0" style="font-size: 0.74rem;">
+                            Add @((FreeShippingThreshold - Subtotal).ToString("C2")) more for free shipping.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private const decimal FreeShippingThreshold = 40m;
+    private const decimal ShippingFee = 4.90m;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "canceled")]
+    public string? Canceled { get; set; }
+
+    private string _email = string.Empty;
+    private string _name = string.Empty;
+    private string _address = string.Empty;
+    private string _city = string.Empty;
+    private string _postal = string.Empty;
+    private string _country = string.Empty;
+
+    private bool _busy;
+    private string? _error;
+
+    private decimal Subtotal => CartService.GetTotal();
+    private decimal Shipping => Subtotal >= FreeShippingThreshold ? 0m : ShippingFee;
+    private decimal Total => Subtotal + Shipping;
+
+    private bool CanPay => !string.IsNullOrWhiteSpace(_email) && CartService.Items.Any();
+
+    protected override void OnInitialized() => CartService.OnChange += StateHasChanged;
+
+    private async Task Pay()
+    {
+        _error = null;
+        _busy = true;
+
+        var request = new CreateCheckoutRequest(
+            Items: CartService.Items.Select(i => new CheckoutItem(
+                Name: i.Product.Name,
+                Description: string.IsNullOrWhiteSpace(i.SelectedMaterial) ? null : $"{i.SelectedMaterial} PLA",
+                UnitAmount: i.Product.Price,
+                Quantity: i.Quantity)).ToList(),
+            Email: _email,
+            Name: _name,
+            Address: _address,
+            City: _city,
+            PostalCode: _postal,
+            Country: _country,
+            ReturnBaseUrl: Navigation.BaseUri);
+
+        try
+        {
+            var result = await CheckoutService.CreateSessionAsync(request);
+            if (result is null || string.IsNullOrEmpty(result.Url))
+            {
+                _error = "We couldn't start the payment. Please make sure the payments service is running and try again.";
+                _busy = false;
+                return;
+            }
+
+            Navigation.NavigateTo(result.Url, forceLoad: true);
+        }
+        catch (Exception)
+        {
+            _error = "We couldn't reach the payments service. Please try again in a moment.";
+            _busy = false;
+        }
+    }
+
+    public void Dispose() => CartService.OnChange -= StateHasChanged;
+}
