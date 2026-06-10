@@ -7,10 +7,10 @@
    drag-orbit + zoom, and live body recolouring driven by the Color parameter.
 *@
 
-<div class="golf-viewer">
-    <div class="golf-stage" @ref="_stage"></div>
-    <p class="text-faint m-0 golf-hint">
-        <i class="bi bi-arrows-move"></i> Drag to rotate · scroll to zoom
+<div class="car-model-viewer">
+    <div class="car-model-stage" @ref="_stage"></div>
+    <p class="text-faint m-0 car-model-hint">
+        <i class="bi bi-arrows-move"></i> @(EnableZoom ? "Drag to rotate · scroll to zoom" : "Drag to rotate")
     </p>
 </div>
 
@@ -21,6 +21,14 @@
     [Parameter] public double Roughness { get; set; } = 0.45;
     [Parameter] public bool Emissive { get; set; }
     [Parameter] public string ModelUrl { get; set; } = "models/golf/untitled.gltf";
+    /// <summary>Allow scroll-to-zoom. When false the model is rotate-only (display use).</summary>
+    [Parameter] public bool EnableZoom { get; set; } = true;
+    /// <summary>Gently auto-spin the model (display use).</summary>
+    [Parameter] public bool AutoRotate { get; set; }
+    /// <summary>Recolour the body to <see cref="Color"/>. When false the model keeps its original textures.</summary>
+    [Parameter] public bool Recolor { get; set; } = true;
+    /// <summary>Apparent model size when framed: 1 = fill, 0.8 = 80% (pulled back).</summary>
+    [Parameter] public double FitScale { get; set; } = 1;
 
     private ElementReference _stage;
     private IJSObjectReference? _module;
@@ -30,15 +38,15 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/golf-viewer.js");
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/car-model-viewer.js");
         _viewer = await _module.InvokeAsync<IJSObjectReference>(
-            "createViewer", _stage, ModelUrl);
-        await ApplyMaterial();
+            "createViewer", _stage, ModelUrl, new { enableZoom = EnableZoom, autoRotate = AutoRotate, fitScale = FitScale });
+        if (Recolor) await ApplyMaterial();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_viewer is not null && Signature != _applied)
+        if (Recolor && _viewer is not null && Signature != _applied)
             await ApplyMaterial();
     }
 

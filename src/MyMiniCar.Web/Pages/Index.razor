@@ -10,26 +10,32 @@
         <div class="row align-items-center gy-5">
             <div class="col-lg-6">
                 <span class="eyebrow">3D-printed · made to order</span>
-                <h1 class="hero-title mt-3">Turn your car into a <span class="hl">keychain</span>.</h1>
+                <h1 class="hero-title mt-3">Your car, shrunk to fit your <span class="hl">pocket</span>.</h1>
                 <p class="hero-lead">
-                    Upload a photo of your ride, pick a filament, add your name or plate — and we 3D-print it
-                    as a pocket-sized keyring tag. Preview it live before you buy.
+                    Pick your model, choose your colour and size, and watch it spin in 3D before you buy.
+                    We print it to order and ship it to your door.
                 </p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="convert" class="btn-primary-c btn-lg"><i class="bi bi-magic"></i> Start designing</a>
-                    <a href="products" class="btn-ghost-c btn-lg">Browse the shop</a>
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Design yours now</a>
+                    <span class="price-anchor">from <strong>@Sizes.Default.BasePrice.ToString("C2")</strong></span>
+
                 </div>
-                <div class="d-flex flex-wrap gap-4 mt-4 pt-2 text-soft" style="font-size: 0.86rem;">
+                <p class="text-soft mb-4" style="font-size: 0.84rem;">
+                    <i class="bi bi-shield-check text-primary-c me-1"></i>30-day remake guarantee · free shipping over $40 · no account needed
+                </p>
+                <div class="d-flex flex-wrap gap-4 pt-2 text-soft" style="font-size: 0.86rem;">
                     <span><i class="bi bi-star-fill text-accent-c me-1"></i>4.9/5 from 2,000+ drivers</span>
-                    <span><i class="bi bi-truck me-1"></i>Worldwide shipping</span>
+                    <span class="ship-note"><span class="live-dot"></span> Printing today — ships in 3–5 days</span>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-stage">
-                    <div class="badge-float" style="top: 1.5rem; left: -0.5rem;"><i class="bi bi-palette-fill text-primary-c"></i> 8 filament colours</div>
-                    <div class="badge-float" style="bottom: 1.5rem; right: -0.5rem;"><i class="bi bi-lightning-charge-fill text-accent-c"></i> Live preview</div>
+                <div class="hero-stage">                    
                     <div class="preview-canvas blueprint-soft" style="border-radius: var(--radius); aspect-ratio: 5/4;">
-                        <KeychainPreview FilamentCss="fil-red" Template='TextTemplates.ById("plate")' Line1="MINI 01" />
+                        <CarModelViewer ModelUrl="models/skoda-octavia-2005/scene.gltf"
+                                    EnableZoom="false"
+                                    AutoRotate="true"
+                                    Recolor="false"
+                                    FitScale="2.0" />
                     </div>
                 </div>
             </div>
@@ -44,13 +50,13 @@
             <div class="col-md-4">
                 <div class="strip-item">
                     <div class="strip-num">01</div>
-                    <div><h5>Upload your car</h5><p>Snap or pick a photo. Any car, any angle — we shape it into a car-tag silhouette.</p></div>
+                    <div><h5>Pick your model</h5><p>Choose your car from the catalogue — Golf, Passat, W124 and more.</p></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="strip-item">
                     <div class="strip-num">02</div>
-                    <div><h5>Customise & preview</h5><p>Choose a PLA filament and add text. See exactly how it'll look, live.</p></div>
+                    <div><h5>Customise & preview</h5><p>Choose your colour and size. See exactly how it'll look, live in 3D.</p></div>
                 </div>
             </div>
             <div class="col-md-4">
@@ -85,8 +91,15 @@
                 {
                     <div class="col-sm-6 col-lg-4">
                         <div class="kc-card">
-                            <div class="kc-thumb @p.TileClass">
-                                <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                            <div class="kc-thumb @(string.IsNullOrEmpty(p.ImageUrl) ? p.TileClass : "car-thumb")">
+                                @if (!string.IsNullOrEmpty(p.ImageUrl))
+                                {
+                                    <img src="@p.ImageUrl" alt="@p.Name" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                                }
                                 <span class="kc-badge">@p.Category</span>
                                 <div class="kc-overlay">
                                     <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">Add to cart</button>
@@ -108,21 +121,109 @@
     </div>
 </section>
 
-<!-- Studio CTA -->
+<!-- Social proof -->
 <section class="section pt-0">
+    <div class="container">
+        <div class="section-head text-center">
+            <span class="eyebrow justify-content-center">Loved by drivers</span>
+            <h2 class="mt-2 mb-0">2,000+ minis on keyrings worldwide</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"Got one of my old Golf before I sold it. The 3D preview matched the print exactly — colour, everything. Gift-level quality."</p>
+                    <div class="testi-who">
+                        <span class="testi-avatar" style="background: var(--primary);">MK</span>
+                        <div>
+                            <div class="testi-name">Martin K.</div>
+                            <div class="testi-car">VW Golf IV</div>
+                        </div>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"Ordered the desk figure of my W124 in silver. Arrived in four days, packaging was great. My dad nearly cried — his first car."</p>
+                    <div class="testi-who">
+                        <span class="testi-avatar" style="background: var(--accent);">EP</span>
+                        <div>
+                            <div class="testi-name">Elena P.</div>
+                            <div class="testi-car">Mercedes W124 300CE</div>
+                        </div>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"Designing it took under a minute and seeing it spin live sold me instantly. Already ordered two more as gifts for the car club."</p>
+                    <div class="testi-who">
+                        <span class="testi-avatar" style="background: var(--surface-ink);">DT</span>
+                        <div>
+                            <div class="testi-name">Dimitar T.</div>
+                            <div class="testi-car">Skoda Octavia</div>
+                        </div>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Guarantees -->
+<section class="assure-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-lg-3">
+                <div class="assure-item">
+                    <i class="bi bi-shield-check"></i>
+                    <span><strong>30-day guarantee</strong>Don't love it? We reprint or refund.</span>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="assure-item">
+                    <i class="bi bi-truck"></i>
+                    <span><strong>Free shipping over $40</strong>Tracked, worldwide.</span>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="assure-item">
+                    <i class="bi bi-lock-fill"></i>
+                    <span><strong>Secure checkout</strong>Cards, PayPal & Apple Pay.</span>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="assure-item">
+                    <i class="bi bi-printer-fill"></i>
+                    <span><strong>Printed to order</strong>Made for you in 3–5 days.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Studio CTA -->
+<section class="section">
     <div class="container">
         <div class="surface-card blueprint-soft p-4 p-md-5" style="border-radius: var(--radius-lg); overflow: hidden;">
             <div class="row align-items-center gy-4">
                 <div class="col-lg-8">
                     <span class="eyebrow">The Studio</span>
-                    <h2 class="mt-2 mb-2">Your car, your colours, your words.</h2>
-                    <p class="text-soft mb-0" style="max-width: 36rem;">
-                        Jump into the Studio, upload a photo and design a one-of-a-kind keychain in under a minute.
+                    <h2 class="mt-2 mb-2">Your car, your colours — in under a minute.</h2>
+                    <p class="text-soft mb-2" style="max-width: 36rem;">
+                        Jump into the Studio and design a one-of-a-kind mini of your car.
                         Nothing to install — it all happens right in your browser.
                     </p>
+                    <span class="ship-note"><span class="live-dot"></span> Order today — printing starts tomorrow</span>
                 </div>
                 <div class="col-lg-4 text-lg-end">
-                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Open the Studio</a>
+                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Design yours now</a>
+                    <p class="text-faint mt-2 mb-0" style="font-size: 0.76rem;">From @Sizes.Default.BasePrice.ToString("C2") · 30-day guarantee</p>
                 </div>
             </div>
         </div>

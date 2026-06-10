@@ -49,8 +49,15 @@
             {
                 <div class="col-sm-6 col-lg-4">
                     <div class="kc-card" style="cursor: pointer;" @onclick="() => OpenDetail(p)">
-                        <div class="kc-thumb @p.TileClass">
-                            <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                        <div class="kc-thumb @(string.IsNullOrEmpty(p.ImageUrl) ? p.TileClass : "car-thumb")">
+                            @if (!string.IsNullOrEmpty(p.ImageUrl))
+                            {
+                                <img src="@p.ImageUrl" alt="@p.Name" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
+                            }
                             <span class="kc-badge">@p.Category</span>
                             <div class="kc-overlay" @onclick:stopPropagation>
                                 <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">Add to cart</button>
@@ -83,8 +90,15 @@
             <div class="modal-mmc-body">
                 <div class="row gy-4">
                     <div class="col-md-6">
-                        <div class="modal-photo @_selected.TileClass">
-                            <i class="bi bi-car-front-fill" style="font-size: 5rem; color: rgba(255,255,255,0.9);"></i>
+                        <div class="modal-photo @(string.IsNullOrEmpty(_selected.ImageUrl) ? _selected.TileClass : "car-thumb")">
+                            @if (!string.IsNullOrEmpty(_selected.ImageUrl))
+                            {
+                                <img src="@_selected.ImageUrl" alt="@_selected.Name" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-car-front-fill" style="font-size: 5rem; color: rgba(255,255,255,0.9);"></i>
+                            }
                         </div>
                     </div>
                     <div class="col-md-6 d-flex flex-column">

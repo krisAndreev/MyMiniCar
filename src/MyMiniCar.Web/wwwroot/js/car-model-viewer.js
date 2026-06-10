@@ -1,4 +1,4 @@
-// Golf 4 3D preview — Three.js GLTF viewer with drag-orbit and live body recolour.
+// Car model 3D preview — Three.js GLTF viewer with drag-orbit and live body recolour.
 // Loaded as an ES module from Blazor via import(). One viewer instance per init() call.
 
 import * as THREE from 'three';
@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 function showOverlay(container, msg) {
     const el = document.createElement('div');
-    el.className = 'golf-overlay';
+    el.className = 'car-model-overlay';
     el.textContent = msg;
     container.appendChild(el);
     return el;
@@ -22,11 +22,17 @@ function webglSupported() {
     }
 }
 
-export function createViewer(container, modelUrl) {
+export function createViewer(container, modelUrl, options = {}) {
     if (!webglSupported()) {
         showOverlay(container, 'WebGL is not available in this browser. Enable hardware acceleration (or update your browser) to see the 3D preview.');
         return { setColor() {}, setMaterial() {}, dispose() {} };
     }
+
+    // Display-only mode: rotate the model (drag + gentle auto-spin) with zoom disabled.
+    const enableZoom = options.enableZoom !== false;
+    const autoRotate = options.autoRotate === true;
+    // Apparent size of the framed model: 1 = fill, 0.8 = 80% (camera pulled back).
+    const fitScale = options.fitScale > 0 ? options.fitScale : 1;
 
     const state = {
         container,
@@ -69,6 +75,9 @@ export function createViewer(container, modelUrl) {
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
+    controls.enableZoom = enableZoom;
+    controls.autoRotate = autoRotate;
+    controls.autoRotateSpeed = 1.2;
     controls.minDistance = 2;
     controls.maxDistance = 20;
     state.controls = controls;
@@ -114,15 +123,15 @@ export function createViewer(container, modelUrl) {
                     state.bodyMaterial = o.material;
                 }
             });
-            console.log('[golf-viewer] meshes:', meshes);
-            console.log('[golf-viewer] body material:', state.bodyMaterial?.name);
+            console.log('[car-model-viewer] meshes:', meshes);
+            console.log('[car-model-viewer] body material:', state.bodyMaterial?.name);
 
             scene.add(model);
 
             // Frame the camera to the bounding SPHERE so the car never clips at any
             // rotation angle (the longest axis always fits). Smaller margin = bigger.
             const radius = Math.max(size.x, size.y, size.z) * 0.5 * Math.sqrt(2);
-            const margin = 1.18;
+            const margin = 1.18 / fitScale;
             const dist = (radius * margin) / Math.sin((Math.PI * camera.fov) / 360);
             camera.position.set(dist * 0.62, dist * 0.42, dist * 0.78);
             controls.target.set(0, 0, 0);
@@ -132,7 +141,7 @@ export function createViewer(container, modelUrl) {
         },
         undefined,
         (err) => {
-            console.error('[golf-viewer] load failed:', err);
+            console.error('[car-model-viewer] load failed:', err);
             showOverlay(container, 'Could not load the 3D model. Check your connection and reload.');
         }
     );

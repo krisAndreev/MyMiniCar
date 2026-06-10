@@ -39,9 +39,9 @@ models/
    ```
 
 3. The car picker binds to `CarCatalog.All`; selecting an entry passes its
-   `GltfPath` to `<GolfViewer ModelUrl="..." />`.
+   `GltfPath` to `<CarModelViewer ModelUrl="..." />`.
 
 ## Notes
 - Three.js is vendored locally at `wwwroot/lib/three/` (no CDN dependency).
 - The viewer forces materials opaque + front-side so only the exterior shows,
-  and recolours the largest mesh (the body) — see `wwwroot/js/golf-viewer.js`.
+  and recolours the largest mesh (the body) — see `wwwroot/js/car-model-viewer.js`.
