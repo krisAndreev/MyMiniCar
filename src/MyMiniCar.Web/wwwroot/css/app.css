@@ -369,21 +369,6 @@ a:hover { color: var(--primary-600); }
 .studio-step-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
 .studio-step-num { font-family: var(--font-mono); font-size: 0.8rem; color: #fff; background: var(--primary); width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-weight: 600; }
 
-/* Stepper */
-.stepper { display: flex; align-items: center; margin-bottom: 2.2rem; }
-.stepper-node { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-.stepper-dot {
-    width: 36px; height: 36px; border-radius: 50%; background: var(--surface);
-    border: 2px solid var(--line); color: var(--ink-faint); font-family: var(--font-mono);
-    font-size: 0.85rem; font-weight: 600; display: grid; place-items: center; transition: var(--t); z-index: 2;
-}
-.stepper-label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
-.stepper-line { flex: 1; height: 2px; background: var(--line); margin: 0 0.4rem; margin-bottom: 1.4rem; border-radius: 2px; transition: var(--t); }
-.stepper-node.active .stepper-dot { border-color: var(--primary); color: var(--primary); box-shadow: var(--ring); }
-.stepper-node.active .stepper-label { color: var(--primary); }
-.stepper-node.done .stepper-dot { background: var(--primary); border-color: var(--primary); color: #fff; }
-.stepper-line.done { background: var(--primary); }
-
 /* Dropzone */
 .dropzone {
     border: 2px dashed var(--line-strong); border-radius: var(--radius);
@@ -457,6 +442,64 @@ a:hover { color: var(--primary-600); }
 .fil-glow   { background: linear-gradient(145deg, #d7ffe6, #7bf2a8); }
 .fil-marble { background: linear-gradient(145deg, #f4f4f2, #c9ccd2 60%, #8c9098); }
 .fil-wood   { background: linear-gradient(145deg, #d9a86a, #8a5a2b); }
+
+/* ---------- Single-screen Studio additions ---------- */
+
+/* Size cards */
+.size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.7rem; }
+.size-card {
+    appearance: none; background: var(--surface); border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm); padding: 0.85rem 0.95rem; text-align: left;
+    cursor: pointer; transition: var(--t); display: flex; flex-direction: column; gap: 0.2rem;
+}
+.size-card:hover { border-color: var(--line-strong); }
+.size-card.selected { border-color: var(--primary); box-shadow: var(--ring); }
+.size-name { font-weight: 700; color: var(--ink); }
+.size-dims { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.05em; color: var(--ink-faint); text-transform: uppercase; }
+.size-blurb { font-size: 0.72rem; color: var(--ink-soft); }
+.size-price { font-family: var(--font-display); font-weight: 700; color: var(--ink); margin-top: 0.2rem; }
+
+/* Material tier labels */
+.mat-tier-label { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0.4rem 0 0.5rem; }
+
+/* Material swatch finishes */
+.mat-pla     { background: linear-gradient(145deg, #6f86ff, #2d6cff); }
+.mat-resin   { background: linear-gradient(145deg, #8fa6ff, #2d6cff); box-shadow: inset 0 -2px 6px rgba(255,255,255,0.5), inset 0 2px 4px rgba(0,0,0,0.18); }
+.mat-alu     { background: linear-gradient(145deg, #f2f4f7, #aeb4bd 55%, #d7dbe0); }
+.mat-wood    { background: linear-gradient(145deg, #d9a86a, #8a5a2b); }
+.mat-marble  { background: linear-gradient(145deg, #f4f4f2, #c9ccd2 60%, #8c9098); }
+.mat-glow    { background: linear-gradient(145deg, #d7ffe6, #7bf2a8); box-shadow: 0 0 10px rgba(123,242,168,0.7); }
+.mat-diecast { background: linear-gradient(145deg, #6b7077, #2b2e33); box-shadow: inset 0 -2px 5px rgba(255,255,255,0.25); }
+.mat-carbon  { background: repeating-linear-gradient(45deg, #2a2c32 0 4px, #1a1c20 4px 8px); }
+
+/* Engraving toggle / panel */
+.engrave-toggle {
+    appearance: none; width: 100%; background: var(--surface-alt); border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius-sm); padding: 0.8rem; color: var(--primary); font-weight: 600;
+    cursor: pointer; transition: var(--t);
+}
+.engrave-toggle:hover { border-color: var(--primary); background: var(--primary-tint); }
+.engrave-panel { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 1rem; background: var(--surface-alt); }
+.engrave-clear { appearance: none; background: none; border: none; color: var(--ink-faint); font-size: 0.78rem; cursor: pointer; }
+.engrave-clear:hover { color: var(--accent); }
+
+/* Sticky add-to-cart bar */
+.studio-bar {
+    position: sticky; bottom: 0; z-index: 20;
+    background: var(--surface); border-top: 1px solid var(--line);
+    box-shadow: 0 -8px 24px rgba(20,28,50,0.08);
+}
+.studio-bar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; }
+.studio-bar-spec { display: flex; flex-direction: column; min-width: 0; }
+.studio-bar-title { font-family: var(--font-display); font-weight: 700; color: var(--ink); }
+.studio-bar-sub { font-size: 0.78rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.studio-bar-price { font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; color: var(--ink); }
+.studio-bar-added { color: #15803d; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+
+@media (max-width: 575px) {
+    .studio-bar-sub { display: none; }
+    .studio-bar-inner { padding: 0.7rem 0.9rem; }
+}
 
 /* Template chooser */
 .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.7rem; }
