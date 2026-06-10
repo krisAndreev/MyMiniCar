@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMiniCar.Web", "src\MyMini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMiniCar.Api", "src\MyMiniCar.Api\MyMiniCar.Api.csproj", "{DB6DC7D2-9287-4AD0-9061-07284BFBC065}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5805044F-F146-4154-A1A5-E557C527AC7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMiniCar.Tests", "tests\MyMiniCar.Tests\MyMiniCar.Tests.csproj", "{47597CCA-5480-4721-A165-43FCC44A4140}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,18 @@ Global
 		{DB6DC7D2-9287-4AD0-9061-07284BFBC065}.Release|x64.Build.0 = Release|Any CPU
 		{DB6DC7D2-9287-4AD0-9061-07284BFBC065}.Release|x86.ActiveCfg = Release|Any CPU
 		{DB6DC7D2-9287-4AD0-9061-07284BFBC065}.Release|x86.Build.0 = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|x64.Build.0 = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Debug|x86.Build.0 = Debug|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|x64.ActiveCfg = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|x64.Build.0 = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|x86.ActiveCfg = Release|Any CPU
+		{47597CCA-5480-4721-A165-43FCC44A4140}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C2403964-7645-4062-954B-93BA9E728958} = {535B3314-071E-4052-BFBE-BD59B2B524C5}
 		{DB6DC7D2-9287-4AD0-9061-07284BFBC065} = {535B3314-071E-4052-BFBE-BD59B2B524C5}
+		{47597CCA-5480-4721-A165-43FCC44A4140} = {5805044F-F146-4154-A1A5-E557C527AC7B}
 	EndGlobalSection
 EndGlobal
