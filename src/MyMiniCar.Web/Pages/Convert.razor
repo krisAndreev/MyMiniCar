@@ -62,12 +62,12 @@
                         <button type="button"
                                 class="golf-swatch @(_bodyColor == col ? "selected" : "")"
                                 style="background:@col"
-                                @onclick="() => _bodyColor = col"
+                                @onclick="() => SelectColor(col)"
                                 aria-label="@col"></button>
                     }
                     <label class="golf-swatch golf-swatch-custom" style="background:@_bodyColor">
                         <input type="color" value="@_bodyColor"
-                               @oninput="e => _bodyColor = e.Value?.ToString() ?? _bodyColor" />
+                               @oninput="OnCustomColor" />
                     </label>
                 </div>
                 @if (!_config.Material.Paintable)
@@ -108,7 +108,7 @@
                         {
                             var mat = m;
                             <div class="swatch @(_config.MaterialName == mat.Name ? "selected" : "")"
-                                 @onclick="() => _config.MaterialName = mat.Name">
+                                 @onclick="() => SelectMaterial(mat.Name)">
                                 <div class="swatch-chip @mat.Css"></div>
                                 <div class="swatch-label">@mat.Name</div>
                             </div>
@@ -147,12 +147,12 @@
                             </div>
                             <input class="input-c mb-2" maxlength="@_config.Template.MaxLength"
                                    placeholder="@_config.Template.Placeholder"
-                                   value="@_config.Line1" @oninput="e => _config.Line1 = e.Value?.ToString() ?? string.Empty" />
+                                   value="@_config.Line1" @oninput="OnLine1" />
                             @if (_config.Template.HasSecondLine)
                             {
                                 <input class="input-c" maxlength="@_config.Template.SecondMaxLength"
                                        placeholder="@_config.Template.SecondPlaceholder"
-                                       value="@_config.Line2" @oninput="e => _config.Line2 = e.Value?.ToString() ?? string.Empty" />
+                                       value="@_config.Line2" @oninput="OnLine2" />
                             }
                         </div>
                     }
@@ -221,10 +221,21 @@
         if (!_config.TextAllowed) _showEngraving = false;   // figures: hide engraving
     }
 
+    private void SelectMaterial(string name) { _config.MaterialName = name; _added = false; }
+
+    private void SelectColor(string color) { _bodyColor = color; _added = false; }
+
+    private void OnCustomColor(ChangeEventArgs e) { _bodyColor = e.Value?.ToString() ?? _bodyColor; _added = false; }
+
+    private void OnLine1(ChangeEventArgs e) { _config.Line1 = e.Value?.ToString() ?? string.Empty; _added = false; }
+
+    private void OnLine2(ChangeEventArgs e) { _config.Line2 = e.Value?.ToString() ?? string.Empty; _added = false; }
+
     private void SelectTemplate(string id)
     {
         _config.TemplateId = id;
         if (!_config.Template.HasSecondLine) _config.Line2 = string.Empty;
+        _added = false;
     }
 
     private void ClearEngraving()
@@ -232,6 +243,7 @@
         _showEngraving = false;
         _config.Line1 = string.Empty;
         _config.Line2 = string.Empty;
+        _added = false;
     }
 
     private void AddToBag()
