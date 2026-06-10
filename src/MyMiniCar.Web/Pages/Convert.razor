@@ -4,208 +4,221 @@
 <div class="container py-5">
     <div class="text-center mb-5">
         <span class="eyebrow">The Studio</span>
-        <h1 class="mt-3 mb-2">Build your keychain</h1>
+        <h1 class="mt-3 mb-2">Get your own @HeadingNoun</h1>
         <p class="text-soft mx-auto" style="max-width: 32rem;">
-            Upload a photo of your car, pick a filament, add your text — and watch it become a 3D-printed keyring tag, live.
+            Pick your car, make it yours — see it spin in 3D, live.
         </p>
     </div>
 
     <div class="row g-4 g-lg-5">
-        <!-- Controls -->
-        <div class="col-lg-6">
-            <div class="studio-panel">
-                <!-- Stepper -->
-                <div class="stepper">
-                    @for (var i = 0; i < _steps.Length; i++)
-                    {
-                        var idx = i;
-                        <div class="stepper-node @StepClass(idx)">
-                            <div class="stepper-dot">@(idx < _step ? "✓" : (idx + 1).ToString())</div>
-                            <span class="stepper-label">@_steps[idx]</span>
-                        </div>
-                        @if (i < _steps.Length - 1)
-                        {
-                            <div class="stepper-line @(idx < _step ? "done" : "")"></div>
-                        }
-                    }
-                </div>
-
-                @if (_step == 0)
-                {
-                    <div class="studio-step-title"><span class="studio-step-num">1</span> Pick your car</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Choose the car model and body paint. The preview updates live.</p>
-
-                    <label class="field-label">Car model</label>
-                    <div class="car-model-grid mb-4">
-                        @foreach (var car in CarCatalog.All)
-                        {
-                            var model = car;
-                            <button type="button"
-                                    class="car-model-card @(_car.Key == model.Key ? "selected" : "")"
-                                    @onclick="() => SelectCar(model)">
-                                <span class="car-model-name">@model.Name</span>
-                                <span class="car-model-meta">3D preview ready</span>
-                            </button>
-                        }
-                    </div>
-
-                    <label class="field-label">Body colour</label>
-                    <div class="golf-swatch-row">
-                        @foreach (var c in _carColors)
-                        {
-                            var col = c;
-                            <button type="button"
-                                    class="golf-swatch @(_carColor == col ? "selected" : "")"
-                                    style="background:@col"
-                                    @onclick="() => _carColor = col"
-                                    aria-label="@col"></button>
-                        }
-                        <label class="golf-swatch golf-swatch-custom" style="background:@_carColor">
-                            <input type="color" value="@_carColor"
-                                   @oninput="e => _carColor = e.Value?.ToString() ?? _carColor" />
-                        </label>
-                    </div>
-                }
-                else if (_step == 1)
-                {
-                    <div class="studio-step-title"><span class="studio-step-num">2</span> Pick your filament</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">The plastic your tag is printed in. Premium finishes cost a little more.</p>
-
-                    <div class="swatch-grid">
-                        @foreach (var f in Filaments.All)
-                        {
-                            var fil = f;
-                            <div class="swatch @(_config.FilamentName == fil.Name ? "selected" : "")"
-                                 @onclick="() => _config.FilamentName = fil.Name">
-                                <div class="swatch-chip @fil.Css"></div>
-                                <div class="swatch-label">@fil.Name</div>
-                                @if (fil.Surcharge > 0)
-                                {
-                                    <div class="text-faint mono" style="font-size: 0.62rem;">+@fil.Surcharge.ToString("C0")</div>
-                                }
-                            </div>
-                        }
-                    </div>
-                }
-                else if (_step == 2)
-                {
-                    <div class="studio-step-title"><span class="studio-step-num">3</span> Add your text</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Choose a template, then type. Leave it blank to print just the car.</p>
-
-                    <label class="field-label">Template</label>
-                    <div class="tpl-grid mb-4">
-                        @foreach (var t in TextTemplates.All)
-                        {
-                            var tpl = t;
-                            <div class="tpl-card @(_config.TemplateId == tpl.Id ? "selected" : "")"
-                                 @onclick="() => SelectTemplate(tpl.Id)">
-                                <div class="tpl-name">@tpl.Label</div>
-                                <div class="tpl-desc">@tpl.Description</div>
-                            </div>
-                        }
-                    </div>
-
-                    <label class="field-label">@(_config.Template.HasSecondLine ? "Line 1" : "Your text")</label>
-                    <input class="input-c mb-3" maxlength="@_config.Template.MaxLength"
-                           placeholder="@_config.Template.Placeholder"
-                           value="@_config.Line1" @oninput="e => _config.Line1 = e.Value?.ToString() ?? string.Empty" />
-
-                    @if (_config.Template.HasSecondLine)
-                    {
-                        <label class="field-label">Line 2</label>
-                        <input class="input-c" maxlength="@_config.Template.SecondMaxLength"
-                               placeholder="@_config.Template.SecondPlaceholder"
-                               value="@_config.Line2" @oninput="e => _config.Line2 = e.Value?.ToString() ?? string.Empty" />
-                    }
-                }
-                else
-                {
-                    <div class="studio-step-title"><span class="studio-step-num">4</span> Review & add to cart</div>
-                    <p class="text-soft mb-4" style="font-size: 0.92rem;">Looking good. Here's the spec of your custom keychain.</p>
-
-                    <div class="summary-grid mb-4">
-                        <div><div class="lbl">Car</div><div class="val">@_car.Name</div></div>
-                        <div><div class="lbl">Filament</div><div class="val">@_config.FilamentName</div></div>
-                        <div><div class="lbl">Text</div><div class="val">@SummaryText</div></div>
-                        <div><div class="lbl">Size</div><div class="val">55mm × 30mm × 4mm</div></div>
-                        <div><div class="lbl">Price</div><div class="val text-primary-c">@_config.Price.ToString("C2")</div></div>
-                    </div>
-
-                    @if (_added)
-                    {
-                        <div class="alert-c" style="background: rgba(34,197,94,0.1); color:#15803d; border-color: rgba(34,197,94,0.3);">
-                            <i class="bi bi-bag-check-fill"></i> Added to your cart!
-                        </div>
-                    }
-                }
-
-                <!-- Nav -->
-                <div class="d-flex gap-2 mt-4 pt-2">
-                    @if (_step > 0)
-                    {
-                        <button class="btn-ghost-c" @onclick="Back"><i class="bi bi-arrow-left"></i> Back</button>
-                    }
-                    @if (_step < 3)
-                    {
-                        <button class="btn-primary-c btn-block" @onclick="Next">
-                            Continue <i class="bi bi-arrow-right"></i>
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="btn-accent-c btn-block" @onclick="AddToBag">
-                            <i class="bi bi-bag-plus"></i> Add to cart — @_config.Price.ToString("C2")
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Live preview -->
+        <!-- Live preview (sticky) -->
         <div class="col-lg-6">
             <div class="preview-stage">
                 <div class="preview-head">
-                    <span class="label">Live preview</span>
+                    <span class="label">Your @HeadingNoun, live</span>
                     <span class="d-inline-flex align-items-center gap-2 text-soft" style="font-size: 0.72rem;">
                         <span class="live-dot"></span> Updating live
                     </span>
                 </div>
                 <div class="preview-canvas blueprint-soft">
-                    <GolfViewer @key="_car.Key" Color="@_carColor" ModelUrl="@_car.GltfPath" />
+                    <GolfViewer @key="_car.Key"
+                                ModelUrl="@_car.GltfPath"
+                                Color="@_config.EffectiveColor(_bodyColor)"
+                                Metalness="_config.Material.Metalness"
+                                Roughness="_config.Material.Roughness"
+                                Emissive="_config.Material.Emissive" />
                 </div>
                 <div class="preview-foot">
-                    <span><i class="bi bi-printer me-1"></i>@_car.Name / @_config.FilamentName PLA</span>
+                    <span><i class="bi bi-printer me-1"></i>@_car.Name / @_config.Material.Name</span>
                     <span class="mono">@_config.Price.ToString("C2")</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Controls (all visible) -->
+        <div class="col-lg-6">
+            <div class="studio-panel">
+                <!-- Your car -->
+                <label class="field-label">Your car</label>
+                <div class="car-model-grid mb-4">
+                    @foreach (var car in CarCatalog.All)
+                    {
+                        var model = car;
+                        <button type="button"
+                                class="car-model-card @(_car.Key == model.Key ? "selected" : "")"
+                                @onclick="() => SelectCar(model)">
+                            <span class="car-model-name">@model.Name</span>
+                            <span class="car-model-meta">3D preview ready</span>
+                        </button>
+                    }
+                </div>
+
+                <!-- Your colour -->
+                <label class="field-label">Your colour</label>
+                <div class="golf-swatch-row mb-2">
+                    @foreach (var c in _carColors)
+                    {
+                        var col = c;
+                        <button type="button"
+                                class="golf-swatch @(_bodyColor == col ? "selected" : "")"
+                                style="background:@col"
+                                @onclick="() => _bodyColor = col"
+                                aria-label="@col"></button>
+                    }
+                    <label class="golf-swatch golf-swatch-custom" style="background:@_bodyColor">
+                        <input type="color" value="@_bodyColor"
+                               @oninput="e => _bodyColor = e.Value?.ToString() ?? _bodyColor" />
+                    </label>
+                </div>
+                @if (!_config.Material.Paintable)
+                {
+                    <p class="text-faint mb-4" style="font-size: 0.74rem;">
+                        <i class="bi bi-info-circle"></i> @_config.Material.Name shows its own finish — colour applies to PLA, Resin &amp; Glow.
+                    </p>
+                }
+                else
+                {
+                    <div class="mb-4"></div>
+                }
+
+                <!-- Your size -->
+                <label class="field-label">Your size</label>
+                <div class="size-grid mb-4">
+                    @foreach (var s in Sizes.All)
+                    {
+                        var size = s;
+                        <button type="button"
+                                class="size-card @(_config.SizeKey == size.Key ? "selected" : "")"
+                                @onclick="() => SelectSize(size)">
+                            <span class="size-name">@size.Name</span>
+                            <span class="size-dims">@size.Dimensions</span>
+                            <span class="size-blurb">@size.Blurb</span>
+                            <span class="size-price">@size.BasePrice.ToString("C2")</span>
+                        </button>
+                    }
+                </div>
+
+                <!-- Your finish -->
+                <label class="field-label">Your finish</label>
+                @foreach (var tier in _tiers)
+                {
+                    <div class="mat-tier-label">@tier @(Materials.TierSurcharge(tier) > 0 ? $"· +{Materials.TierSurcharge(tier):C0}" : "")</div>
+                    <div class="swatch-grid mb-3">
+                        @foreach (var m in Materials.All.Where(m => m.Tier == tier))
+                        {
+                            var mat = m;
+                            <div class="swatch @(_config.MaterialName == mat.Name ? "selected" : "")"
+                                 @onclick="() => _config.MaterialName = mat.Name">
+                                <div class="swatch-chip @mat.Css"></div>
+                                <div class="swatch-label">@mat.Name</div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Add engraving (keychain only, collapsed) -->
+                @if (_config.TextAllowed)
+                {
+                    @if (!_showEngraving)
+                    {
+                        <button type="button" class="engrave-toggle" @onclick="() => _showEngraving = true">
+                            <i class="bi bi-plus-circle"></i> Add your engraving
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="engrave-panel mt-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="field-label m-0">Your engraving</label>
+                                <button type="button" class="engrave-clear" @onclick="ClearEngraving">
+                                    <i class="bi bi-x"></i> Remove
+                                </button>
+                            </div>
+                            <div class="tpl-grid mb-3">
+                                @foreach (var t in TextTemplates.All)
+                                {
+                                    var tpl = t;
+                                    <div class="tpl-card @(_config.TemplateId == tpl.Id ? "selected" : "")"
+                                         @onclick="() => SelectTemplate(tpl.Id)">
+                                        <div class="tpl-name">@tpl.Label</div>
+                                        <div class="tpl-desc">@tpl.Description</div>
+                                    </div>
+                                }
+                            </div>
+                            <input class="input-c mb-2" maxlength="@_config.Template.MaxLength"
+                                   placeholder="@_config.Template.Placeholder"
+                                   value="@_config.Line1" @oninput="e => _config.Line1 = e.Value?.ToString() ?? string.Empty" />
+                            @if (_config.Template.HasSecondLine)
+                            {
+                                <input class="input-c" maxlength="@_config.Template.SecondMaxLength"
+                                       placeholder="@_config.Template.SecondPlaceholder"
+                                       value="@_config.Line2" @oninput="e => _config.Line2 = e.Value?.ToString() ?? string.Empty" />
+                            }
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>
 </div>
 
+<!-- Sticky add-to-cart bar -->
+<div class="studio-bar">
+    <div class="container studio-bar-inner">
+        <div class="studio-bar-spec">
+            <span class="studio-bar-title">Your @_config.Size.Name</span>
+            <span class="studio-bar-sub">@_car.Name · @_config.Material.Name@(EngravingSummary)</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            @if (_added)
+            {
+                <span class="studio-bar-added"><i class="bi bi-bag-check-fill"></i> It's yours — added!</span>
+            }
+            <span class="studio-bar-price">@_config.Price.ToString("C2")</span>
+            <button class="btn-accent-c" @onclick="AddToBag">
+                <i class="bi bi-bag-plus"></i> Get yours
+            </button>
+        </div>
+    </div>
+</div>
+
 @code {
-    private readonly string[] _steps = { "Car", "Style", "Personalize", "Review" };
-    private int _step = 0;
     private bool _added;
-    private string _carColor = "#2D6CFF";
+    private bool _showEngraving;
+    private string _bodyColor = "#2D6CFF";
     private CarModel _car = CarCatalog.Default;
-    private readonly KeychainConfig _config = new();
+    private readonly StudioConfig _config = new();
+
+    private readonly MaterialTier[] _tiers =
+    {
+        MaterialTier.Standard, MaterialTier.Premium, MaterialTier.Showcase
+    };
 
     private readonly string[] _carColors =
     {
         "#16161a", "#f4f6f9", "#c81f0c", "#1741b8", "#9aa3b0", "#1d7a46", "#e0a020",
     };
 
-    private string StepClass(int idx) => idx == _step ? "active" : idx < _step ? "done" : "";
+    private string HeadingNoun => _config.Size.AllowsText ? "keychain" : "figure";
 
-    private string SummaryText
+    private string EngravingSummary
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(_config.Line1)) return "— none —";
+            if (!_config.TextAllowed || string.IsNullOrWhiteSpace(_config.Line1)) return string.Empty;
             return _config.Template.HasSecondLine && !string.IsNullOrWhiteSpace(_config.Line2)
-                ? $"{_config.Line1} · {_config.Line2}"
-                : _config.Line1;
+                ? $" · “{_config.Line1} · {_config.Line2}”"
+                : $" · “{_config.Line1}”";
         }
+    }
+
+    private void SelectCar(CarModel car) { _car = car; _added = false; }
+
+    private void SelectSize(SizeOption size)
+    {
+        _config.SizeKey = size.Key;
+        _added = false;
+        if (!_config.TextAllowed) _showEngraving = false;   // figures: hide engraving
     }
 
     private void SelectTemplate(string id)
@@ -214,34 +227,39 @@
         if (!_config.Template.HasSecondLine) _config.Line2 = string.Empty;
     }
 
-    private void SelectCar(CarModel car)
+    private void ClearEngraving()
     {
-        _car = car;
-        _added = false;
+        _showEngraving = false;
+        _config.Line1 = string.Empty;
+        _config.Line2 = string.Empty;
     }
-
-    private void Next() { if (_step < 3) _step++; }
-    private void Back() { _added = false; if (_step > 0) _step--; }
 
     private void AddToBag()
     {
+        var hasText = _config.TextAllowed && !string.IsNullOrWhiteSpace(_config.Line1);
+        var text = hasText
+            ? (_config.Template.HasSecondLine && !string.IsNullOrWhiteSpace(_config.Line2)
+                ? $"{_config.Line1} · {_config.Line2}"
+                : _config.Line1)
+            : null;
+
         var product = new Product
         {
             Id = $"custom-{Guid.NewGuid():N}",
-            Name = $"Custom {_car.Name} Keychain",
-            Description = $"A 3D-printed {_car.Name} keychain in {_config.FilamentName} PLA"
-                + (string.IsNullOrWhiteSpace(_config.Line1) ? "." : $", engraved \"{SummaryText}\"."),
+            Name = $"Custom {_car.Name} {_config.Size.Name}",
+            Description = $"A 3D-printed {_car.Name} {_config.Size.Name.ToLower()} in {_config.Material.Name}"
+                + (text is null ? "." : $", engraved \"{text}\"."),
             Price = _config.Price,
-            ImageUrl = _config.ImageDataUrl ?? string.Empty,
+            ImageUrl = string.Empty,
             Category = "Custom",
-            DefaultMaterial = _config.FilamentName,
-            TileClass = _config.Filament.Css,
-            Filament = _config.FilamentName,
-            CustomText = string.IsNullOrWhiteSpace(_config.Line1) ? null : SummaryText,
-            Dimensions = "55mm × 30mm × 4mm"
+            DefaultMaterial = _config.Material.Name,
+            TileClass = _config.Material.Css,
+            Filament = _config.Material.Name,
+            CustomText = text,
+            Dimensions = _config.Size.Dimensions
         };
 
-        CartService.AddItem(product, _config.FilamentName);
+        CartService.AddItem(product, _config.Material.Name);
         _added = true;
     }
 }
