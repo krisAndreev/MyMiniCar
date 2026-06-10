@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Net.Http.Headers;
+using System.Text;
 using MyMiniCar.Api;
 using Stripe;
 using Stripe.Checkout;
@@ -13,6 +16,20 @@ builder.Services.AddCors(options => options.AddPolicy(CorsPolicy, policy =>
           .AllowAnyHeader()
           .AllowAnyMethod()));
 
+// TODO #REFACTOR - switch Econt demo creds/URL to the live contract before go-live
+builder.Services.AddHttpClient<EcontService>((sp, http) =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = cfg["Econt:BaseUrl"] ?? "https://demo.econt.com/ee/services/";
+    if (!baseUrl.EndsWith('/')) baseUrl += "/";
+    http.BaseAddress = new Uri(baseUrl);
+
+    var user = cfg["Econt:Username"] ?? "iasp-dev";
+    var pass = cfg["Econt:Password"] ?? "1Asp-dev";
+    var token = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{user}:{pass}"));
+    http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
+});
+
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
     ?? throw new InvalidOperationException(
@@ -20,9 +37,7 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
 
 app.UseCors(CorsPolicy);
 
-const string Currency = "usd";
-const decimal FreeShippingThreshold = 40m;
-const decimal ShippingFee = 4.90m;
+const string Currency = "eur";
 
 app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
 {
@@ -47,8 +62,8 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
         }
     }).ToList();
 
-    var subtotal = req.Items.Sum(i => i.UnitAmount * i.Quantity);
-    if (subtotal < FreeShippingThreshold)
+    // TODO #REFACTOR - re-price shipping server-side, don't trust the client amount
+    if (req.ShippingAmount > 0m)
     {
         lineItems.Add(new SessionLineItemOptions
         {
@@ -56,8 +71,13 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
             PriceData = new SessionLineItemPriceDataOptions
             {
                 Currency = Currency,
-                UnitAmountDecimal = ShippingFee * 100m,
-                ProductData = new SessionLineItemPriceDataProductDataOptions { Name = "Shipping" }
+                UnitAmountDecimal = req.ShippingAmount * 100m,
+                ProductData = new SessionLineItemPriceDataProductDataOptions
+                {
+                    Name = string.Equals(req.DeliveryMode, "office", StringComparison.OrdinalIgnoreCase)
+                        ? "Доставка до офис на Еконт"
+                        : "Доставка до адрес (Еконт)"
+                }
             }
         });
     }
@@ -73,10 +93,14 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
         Metadata = new Dictionary<string, string>
         {
             ["customer_name"] = req.Name ?? string.Empty,
+            ["customer_phone"] = req.Phone ?? string.Empty,
+            ["delivery_mode"] = req.DeliveryMode ?? "address",
+            ["office_code"] = req.OfficeCode ?? string.Empty,
             ["shipping_address"] = req.Address ?? string.Empty,
             ["shipping_city"] = req.City ?? string.Empty,
             ["shipping_postal"] = req.PostalCode ?? string.Empty,
-            ["shipping_country"] = req.Country ?? string.Empty
+            ["shipping_country"] = req.Country ?? string.Empty,
+            ["weight_kg"] = req.WeightKg.ToString(CultureInfo.InvariantCulture)
         }
     };
 
@@ -112,6 +136,94 @@ app.MapGet("/api/checkout/session/{id}", (string id) =>
     }
 });
 
+app.MapPost("/api/shipping/quote", async (ShippingQuoteRequest req, EcontService econt) =>
+{
+    try
+    {
+        var result = await econt.CalculateAsync(req);
+        return result is null
+            ? Results.Problem("Could not calculate a shipping price.")
+            : Results.Ok(result);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Econt error: {ex.Message}");
+    }
+});
+
+app.MapGet("/api/shipping/cities", async (EcontService econt) =>
+{
+    try
+    {
+        return Results.Ok(await econt.GetCitiesAsync());
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Econt error: {ex.Message}");
+    }
+});
+
+app.MapGet("/api/shipping/offices", async (int cityId, EcontService econt) =>
+{
+    if (cityId <= 0)
+        return Results.BadRequest(new { error = "A valid cityId is required." });
+
+    try
+    {
+        return Results.Ok(await econt.GetOfficesAsync(cityId));
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Econt error: {ex.Message}");
+    }
+});
+
+// TODO #REFACTOR - book label via Stripe webhook, not on page load
+// TODO #REFACTOR - make idempotent: one waybill per session
+// TODO #REFACTOR - persist order + shipment number
+app.MapPost("/api/shipping/label", async (CreateLabelRequest req, EcontService econt) =>
+{
+    Session session;
+    try
+    {
+        session = new SessionService().Get(req.SessionId);
+    }
+    catch (StripeException)
+    {
+        return Results.NotFound(new { error = "Session not found." });
+    }
+
+    if (!string.Equals(session.PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase))
+        return Results.BadRequest(new { error = "Payment not completed." });
+
+    var m = session.Metadata ?? new Dictionary<string, string>();
+    double.TryParse(m.GetValueOrDefault("weight_kg"), NumberStyles.Float, CultureInfo.InvariantCulture, out var weight);
+
+    try
+    {
+        var result = await econt.CreateLabelAsync(
+            deliveryMode: m.GetValueOrDefault("delivery_mode") ?? "address",
+            officeCode: m.GetValueOrDefault("office_code"),
+            cityName: m.GetValueOrDefault("shipping_city"),
+            postCode: m.GetValueOrDefault("shipping_postal"),
+            street: m.GetValueOrDefault("shipping_address"),
+            num: null,
+            weightKg: weight,
+            receiverName: string.IsNullOrWhiteSpace(m.GetValueOrDefault("customer_name")) ? "Customer" : m["customer_name"],
+            receiverPhone: string.IsNullOrWhiteSpace(m.GetValueOrDefault("customer_phone")) ? "0000000000" : m["customer_phone"],
+            receiverEmail: session.CustomerDetails?.Email ?? session.CustomerEmail,
+            description: "AURA order");
+
+        return result is null
+            ? Results.Problem("Could not create the Econt label.")
+            : Results.Ok(result);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Econt error: {ex.Message}");
+    }
+});
+
 app.MapGet("/", () => "MyMiniCar payments API — POST /api/checkout/create-session");
 
 app.Run();
@@ -122,10 +234,15 @@ namespace MyMiniCar.Api
         List<CheckoutItem> Items,
         string? Email,
         string? Name,
+        string? Phone,
         string? Address,
         string? City,
         string? PostalCode,
         string? Country,
+        string DeliveryMode,
+        string? OfficeCode,
+        decimal ShippingAmount,
+        double WeightKg,
         string ReturnBaseUrl);
 
     public record CheckoutItem(string Name, string? Description, decimal UnitAmount, long Quantity);

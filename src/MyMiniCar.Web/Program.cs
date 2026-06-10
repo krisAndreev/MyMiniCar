@@ -15,5 +15,6 @@ builder.Services.AddSingleton<CartService>();
 
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5230";
 builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
+builder.Services.AddScoped(_ => new ShippingService(apiBaseUrl));
 
 await builder.Build().RunAsync();

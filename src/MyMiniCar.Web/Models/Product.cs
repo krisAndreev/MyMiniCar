@@ -12,6 +12,9 @@ public class Product
     public string Dimensions { get; set; } = string.Empty;
     public bool IsFeatured { get; set; }
 
+    // TODO #REFACTOR - set real per-product weights (Econt prices by weight)
+    public int WeightGrams { get; set; } = 250;
+
     /// <summary>CSS filament class used to tint showcase tiles / previews (e.g. "fil-red").</summary>
     public string TileClass { get; set; } = "fil-blue";
 

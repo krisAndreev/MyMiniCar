@@ -43,10 +43,15 @@ public record CreateCheckoutRequest(
     List<CheckoutItem> Items,
     string? Email,
     string? Name,
+    string? Phone,
     string? Address,
     string? City,
     string? PostalCode,
     string? Country,
+    string DeliveryMode,
+    string? OfficeCode,
+    decimal ShippingAmount,
+    double WeightKg,
     string ReturnBaseUrl);
 
 public record CreateSessionResult(string Id, string Url);
