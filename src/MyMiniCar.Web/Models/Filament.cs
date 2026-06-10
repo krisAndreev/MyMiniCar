@@ -3,21 +3,19 @@ using System.Linq;
 
 namespace MyMiniCar.Web.Models;
 
-/// <summary>A selectable PLA filament finish for a keychain.</summary>
+/// <summary>A selectable PLA filament finish (used by the Products + About finish pickers).</summary>
 public class Filament
 {
     public string Name { get; init; } = string.Empty;
     /// <summary>CSS class for the swatch chip + plate tint (e.g. "fil-red").</summary>
     public string Css { get; init; } = string.Empty;
-    /// <summary>Added cost over the base keychain price.</summary>
+    /// <summary>Added cost over the base price.</summary>
     public decimal Surcharge { get; init; }
     public bool IsPremium { get; init; }
 }
 
 public static class Filaments
 {
-    public const decimal BasePrice = 16.90m;
-
     public static readonly IReadOnlyList<Filament> All = new List<Filament>
     {
         new() { Name = "Midnight Black", Css = "fil-black" },
@@ -32,20 +30,4 @@ public static class Filaments
 
     public static Filament ByName(string name) =>
         All.FirstOrDefault(f => f.Name == name) ?? All[2];
-}
-
-/// <summary>A user's in-progress keychain design in the Studio.</summary>
-public class KeychainConfig
-{
-    public string? ImageDataUrl { get; set; }
-    public string FilamentName { get; set; } = "Racing Red";
-    public string TemplateId { get; set; } = "plate";
-    public string Line1 { get; set; } = string.Empty;
-    public string Line2 { get; set; } = string.Empty;
-
-    public Filament Filament => Filaments.ByName(FilamentName);
-    public TextTemplate Template => TextTemplates.ById(TemplateId);
-    public bool HasImage => !string.IsNullOrEmpty(ImageDataUrl);
-
-    public decimal Price => Filaments.BasePrice + Filament.Surcharge;
 }
