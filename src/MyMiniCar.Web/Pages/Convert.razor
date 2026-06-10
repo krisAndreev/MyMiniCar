@@ -218,7 +218,14 @@
     {
         _config.SizeKey = size.Key;
         _added = false;
-        if (!_config.TextAllowed) _showEngraving = false;   // figures: hide engraving
+        if (!_config.TextAllowed)
+        {
+            // figures: hide engraving AND clear any text, so it can't silently
+            // leak back into the order on a return trip to the keychain size.
+            _showEngraving = false;
+            _config.Line1 = string.Empty;
+            _config.Line2 = string.Empty;
+        }
     }
 
     private void SelectMaterial(string name) { _config.MaterialName = name; _added = false; }
