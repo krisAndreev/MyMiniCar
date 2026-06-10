@@ -15,13 +15,17 @@
 </div>
 
 @code {
+    /// <summary>Effective body colour (paintable → body colour, else material fixed finish).</summary>
     [Parameter] public string Color { get; set; } = "#2D6CFF";
+    [Parameter] public double Metalness { get; set; } = 0.35;
+    [Parameter] public double Roughness { get; set; } = 0.45;
+    [Parameter] public bool Emissive { get; set; }
     [Parameter] public string ModelUrl { get; set; } = "models/golf/untitled.gltf";
 
     private ElementReference _stage;
     private IJSObjectReference? _module;
     private IJSObjectReference? _viewer;
-    private string? _applied;
+    private string _applied = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -29,20 +33,28 @@
         _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/golf-viewer.js");
         _viewer = await _module.InvokeAsync<IJSObjectReference>(
             "createViewer", _stage, ModelUrl);
-        await ApplyColor();
+        await ApplyMaterial();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_viewer is not null && Color != _applied)
-            await ApplyColor();
+        if (_viewer is not null && Signature != _applied)
+            await ApplyMaterial();
     }
 
-    private async Task ApplyColor()
+    private string Signature => $"{Color}|{Metalness}|{Roughness}|{Emissive}";
+
+    private async Task ApplyMaterial()
     {
         if (_viewer is null) return;
-        await _viewer.InvokeVoidAsync("setColor", Color);
-        _applied = Color;
+        await _viewer.InvokeVoidAsync("setMaterial", new
+        {
+            color = Color,
+            metalness = Metalness,
+            roughness = Roughness,
+            emissive = Emissive
+        });
+        _applied = Signature;
     }
 
     public async ValueTask DisposeAsync()

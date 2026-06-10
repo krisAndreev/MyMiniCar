@@ -25,7 +25,7 @@ function webglSupported() {
 export function createViewer(container, modelUrl) {
     if (!webglSupported()) {
         showOverlay(container, 'WebGL is not available in this browser. Enable hardware acceleration (or update your browser) to see the 3D preview.');
-        return { setColor() {}, dispose() {} };
+        return { setColor() {}, setMaterial() {}, dispose() {} };
     }
 
     const state = {
@@ -166,6 +166,18 @@ export function createViewer(container, modelUrl) {
             mat.color = new THREE.Color(hex);
             mat.metalness = 0.35;
             mat.roughness = 0.45;
+            mat.needsUpdate = true;
+        },
+        // Apply a finish: effective colour + PBR params. `emissive` makes the body
+        // glow in the chosen colour (glow-in-the-dark finish).
+        setMaterial({ color, metalness, roughness, emissive }) {
+            const mat = state.bodyMaterial;
+            if (!mat) return;
+            mat.map = null;
+            mat.color = new THREE.Color(color);
+            mat.metalness = metalness;
+            mat.roughness = roughness;
+            mat.emissive = emissive ? new THREE.Color(color) : new THREE.Color(0x000000);
             mat.needsUpdate = true;
         },
         dispose() {
