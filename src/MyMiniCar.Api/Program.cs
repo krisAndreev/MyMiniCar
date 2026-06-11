@@ -38,6 +38,7 @@ builder.Services.AddHttpClient<EcontService>((sp, http) =>
 });
 
 builder.Services.AddSingleton<SupabaseDataSource>();
+builder.Services.AddScoped<ProductRepository>();
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
@@ -242,6 +243,18 @@ app.MapPost("/api/shipping/label", async (CreateLabelRequest req, EcontService e
     {
         return Results.Problem($"Econt error: {ex.Message}");
     }
+});
+
+app.MapGet("/api/products", async (ProductRepository repo) =>
+    Results.Ok(await repo.GetActiveAsync()));
+
+app.MapGet("/api/products/featured", async (ProductRepository repo) =>
+    Results.Ok(await repo.GetFeaturedAsync()));
+
+app.MapGet("/api/products/{id}", async (string id, ProductRepository repo) =>
+{
+    var product = await repo.GetByIdAsync(id);
+    return product is null ? Results.NotFound() : Results.Ok(product);
 });
 
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.

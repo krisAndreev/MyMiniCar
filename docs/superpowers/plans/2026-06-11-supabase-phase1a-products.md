@@ -140,14 +140,14 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Register the repository**
+- [x] **Step 1: Register the repository**
 
 In `src/MyMiniCar.Api/Program.cs`, next to `builder.Services.AddSingleton<SupabaseDataSource>();` add:
 ```csharp
 builder.Services.AddScoped<ProductRepository>();
 ```
 
-- [ ] **Step 2: Add the endpoints**
+- [x] **Step 2: Add the endpoints**
 
 In `src/MyMiniCar.Api/Program.cs`, just before the `/api/health/db` endpoint, add:
 ```csharp
@@ -164,12 +164,12 @@ app.MapGet("/api/products/{id}", async (string id, ProductRepository repo) =>
 });
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Api && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 4: Smoke-test against live DB**
+- [x] **Step 4: Smoke-test against live DB**
 
 Run:
 ```bash
@@ -184,7 +184,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: products JSON array (8 items), `featured= 3`, golf-keychain JSON, `missing=404`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Program.cs
