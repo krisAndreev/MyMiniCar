@@ -1,0 +1,61 @@
+@page "/admin/orders"
+@attribute [Authorize(Roles = "admin")]
+@using MyMiniCar.Web.Services
+@inject AdminOrdersService Admin
+
+<PageTitle>Admin · Orders</PageTitle>
+<div class="admin-page container py-5">
+    <div class="d-flex gap-3 mb-3">
+        <a href="admin/products" class="nav-link-mmc">Products</a>
+        <a href="admin/orders" class="nav-link-mmc">Orders</a>
+    </div>
+    <h1>Orders</h1>
+
+    @if (_orders is null)
+    {
+        <p>Loading…</p>
+    }
+    else if (_orders.Count == 0)
+    {
+        <p>No orders yet.</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var o in _orders)
+                {
+                    <tr>
+                        <td>@o.CreatedAt.ToLocalTime().ToString("dd MMM HH:mm")</td>
+                        <td>@(o.CustomerName ?? o.Email ?? "Guest")</td>
+                        <td>@string.Join(", ", o.Items.Select(i => $"{i.Quantity}× {i.Name}"))</td>
+                        <td>@o.Total.ToString("0.00") @o.Currency.ToUpperInvariant()</td>
+                        <td>
+                            <select value="@o.Status" @onchange="e => ChangeStatus(o, e.Value?.ToString())">
+                                @foreach (var s in _statuses)
+                                {
+                                    <option value="@s" selected="@(s == o.Status)">@s</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<AdminOrder>? _orders;
+    private readonly string[] _statuses = { "pending", "paid", "shipped", "delivered", "cancelled", "refunded" };
+
+    protected override async Task OnInitializedAsync() => _orders = await Admin.GetAllAsync();
+
+    private async Task ChangeStatus(AdminOrder o, string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status) || status == o.Status) return;
+        if (await Admin.SetStatusAsync(o.Id, status))
+            _orders = await Admin.GetAllAsync();
+    }
+}

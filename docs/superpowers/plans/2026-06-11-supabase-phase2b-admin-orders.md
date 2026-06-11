@@ -157,7 +157,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Pages/Admin/Orders.razor`
 - Modify: `src/MyMiniCar.Web/Pages/Admin/Products.razor`
 
-- [ ] **Step 1: Create the service**
+- [x] **Step 1: Create the service**
 
 `src/MyMiniCar.Web/Services/AdminOrdersService.cs`:
 ```csharp
@@ -208,14 +208,14 @@ public sealed record AdminOrder(
     string? Carrier, string? ShippingMethod, DateTime CreatedAt, List<AdminOrderItem> Items);
 ```
 
-- [ ] **Step 2: Register the service**
+- [x] **Step 2: Register the service**
 
 In `src/MyMiniCar.Web/Program.cs`, next to `AdminProductService`:
 ```csharp
 builder.Services.AddScoped(sp => new AdminOrdersService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 ```
 
-- [ ] **Step 3: Create the orders page**
+- [x] **Step 3: Create the orders page**
 
 `src/MyMiniCar.Web/Pages/Admin/Orders.razor`:
 ```razor
@@ -282,7 +282,7 @@ builder.Services.AddScoped(sp => new AdminOrdersService(apiBaseUrl, sp.GetRequir
 }
 ```
 
-- [ ] **Step 4: Add an Orders link on the Products admin page**
+- [x] **Step 4: Add an Orders link on the Products admin page**
 
 In `src/MyMiniCar.Web/Pages/Admin/Products.razor`, right after the opening `<div class="admin-page container py-5">`, add a small admin nav:
 ```razor
@@ -292,12 +292,12 @@ In `src/MyMiniCar.Web/Pages/Admin/Products.razor`, right after the opening `<div
     </div>
 ```
 
-- [ ] **Step 5: Build**
+- [x] **Step 5: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/AdminOrdersService.cs src/MyMiniCar.Web/Program.cs src/MyMiniCar.Web/Pages/Admin/Orders.razor src/MyMiniCar.Web/Pages/Admin/Products.razor
