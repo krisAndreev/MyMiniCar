@@ -1,0 +1,58 @@
+@page "/admin/analytics"
+@attribute [Authorize(Roles = "admin")]
+@using MyMiniCar.Web.Services
+@inject AdminAnalyticsService Admin
+
+<PageTitle>Admin · Analytics</PageTitle>
+<div class="admin-page container py-5">
+    <div class="d-flex gap-3 mb-3">
+        <a href="admin/products" class="nav-link-mmc">Products</a>
+        <a href="admin/orders" class="nav-link-mmc">Orders</a>
+        <a href="admin/analytics" class="nav-link-mmc">Analytics</a>
+    </div>
+    <h1>Analytics</h1>
+
+    @if (_data is null)
+    {
+        <p>Loading…</p>
+    }
+    else
+    {
+        <div class="stat-cards">
+            <div class="stat-card"><span class="stat-label">Revenue</span><span class="stat-value">@_data.TotalRevenue.ToString("0.00")</span></div>
+            <div class="stat-card"><span class="stat-label">Orders</span><span class="stat-value">@_data.OrderCount</span></div>
+            <div class="stat-card"><span class="stat-label">Paid orders</span><span class="stat-value">@_data.PaidOrderCount</span></div>
+            <div class="stat-card"><span class="stat-label">Avg order</span><span class="stat-value">@_data.AverageOrderValue.ToString("0.00")</span></div>
+        </div>
+
+        <h2 class="mt-4">By status</h2>
+        <ul>@foreach (var s in _data.StatusCounts) { <li>@s.Status — @s.Count</li> }</ul>
+
+        <h2 class="mt-4">Top products</h2>
+        @if (_data.TopProducts.Count == 0) { <p>No sales yet.</p> }
+        else
+        {
+            <table class="admin-table">
+                <thead><tr><th>Product</th><th>Qty</th><th>Revenue</th></tr></thead>
+                <tbody>
+                    @foreach (var p in _data.TopProducts)
+                    {
+                        <tr><td>@p.Name</td><td>@p.Quantity</td><td>@p.Revenue.ToString("0.00")</td></tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h2 class="mt-4">Revenue (last 14 days)</h2>
+        @if (_data.RevenueByDay.Count == 0) { <p>No revenue yet.</p> }
+        else
+        {
+            <ul>@foreach (var d in _data.RevenueByDay) { <li>@d.Day.ToString("dd MMM") — @d.Revenue.ToString("0.00")</li> }</ul>
+        }
+    }
+</div>
+
+@code {
+    private AnalyticsSummary? _data;
+    protected override async Task OnInitializedAsync() => _data = await Admin.GetAsync();
+}

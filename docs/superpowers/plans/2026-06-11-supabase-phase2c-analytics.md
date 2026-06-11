@@ -179,7 +179,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Pages/Admin/Analytics.razor`
 - Modify: `src/MyMiniCar.Web/Pages/Admin/Products.razor`, `src/MyMiniCar.Web/Pages/Admin/Orders.razor`
 
-- [ ] **Step 1: Create the service**
+- [x] **Step 1: Create the service**
 
 `src/MyMiniCar.Web/Services/AdminAnalyticsService.cs`:
 ```csharp
@@ -218,14 +218,14 @@ public sealed record AnalyticsSummary(
     List<StatusCount> StatusCounts, List<TopProduct> TopProducts, List<RevenuePoint> RevenueByDay);
 ```
 
-- [ ] **Step 2: Register the service**
+- [x] **Step 2: Register the service**
 
 In `src/MyMiniCar.Web/Program.cs`, next to `AdminOrdersService`:
 ```csharp
 builder.Services.AddScoped(sp => new AdminAnalyticsService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 ```
 
-- [ ] **Step 3: Create the analytics page**
+- [x] **Step 3: Create the analytics page**
 
 `src/MyMiniCar.Web/Pages/Admin/Analytics.razor`:
 ```razor
@@ -289,19 +289,19 @@ builder.Services.AddScoped(sp => new AdminAnalyticsService(apiBaseUrl, sp.GetReq
 }
 ```
 
-- [ ] **Step 4: Add Analytics to the admin nav rows**
+- [x] **Step 4: Add Analytics to the admin nav rows**
 
 In BOTH `src/MyMiniCar.Web/Pages/Admin/Products.razor` and `src/MyMiniCar.Web/Pages/Admin/Orders.razor`, in the `<div class="d-flex gap-3 mb-3">` nav row, add after the Orders link:
 ```razor
         <a href="admin/analytics" class="nav-link-mmc">Analytics</a>
 ```
 
-- [ ] **Step 5: Build**
+- [x] **Step 5: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/AdminAnalyticsService.cs src/MyMiniCar.Web/Program.cs src/MyMiniCar.Web/Pages/Admin/Analytics.razor src/MyMiniCar.Web/Pages/Admin/Products.razor src/MyMiniCar.Web/Pages/Admin/Orders.razor
