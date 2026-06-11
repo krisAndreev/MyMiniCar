@@ -116,6 +116,55 @@ In **test mode**, complete checkout with card `4242 4242 4242 4242`, any future 
 
 ---
 
+## 🚚 Delivery (Econt courier)
+
+Shipping is handled by the **Econt** courier API. Like Stripe, Econt credentials are
+secrets, so all Econt calls go through `MyMiniCar.Api` — the WASM client only ever talks
+to our own `/api/shipping/*` endpoints.
+
+```text
+Browser (WASM)  →  MyMiniCar.Api  →  Econt API  →  (price / offices / waybill)
+```
+
+**Flow:** on `Checkout.razor` the customer picks **delivery to an address** or **to an
+Econt office** (offices are listed by city), then *Calculate delivery price* fetches a live
+quote (`/api/shipping/quote` → Econt `createLabel` in `calculate` mode). The quote is added
+to the Stripe session as the shipping line. After payment, `OrderConfirmation.razor` calls
+`/api/shipping/label`, which reads the delivery details from the **paid** session's metadata
+and books the waybill (Econt `createLabel` in `create` mode), then shows the tracking number.
+
+Because Bulgaria adopted the euro in 2026, Econt quotes — and the whole shop — are in
+**EUR** (Stripe `Currency = "eur"`). Free shipping still applies over €40.
+
+Econt charges a **flat national rate by weight tier** (distance doesn't change it), so the
+quote scales with the cart's total `WeightGrams`, not the destination. On top of Econt's real
+cost we add a flat **handling fee** (`Shipping:HandlingFee` in `appsettings.json`, default
+€1.50) as margin — it's folded into the shipping amount the customer is charged.
+
+### Configuring Econt
+
+The defaults in `appsettings.json` point at Econt's **public demo environment**
+(`https://demo.econt.com/ee/services/`) with the shared demo credentials, so a fresh clone
+works without a courier contract. Override for production via user-secrets:
+
+```bash
+cd src/MyMiniCar.Api
+dotnet user-secrets set "Econt:Username" "<your-api-user>"
+dotnet user-secrets set "Econt:Password" "<your-api-password>"
+# Econt:BaseUrl → https://ee.econt.com/services/  (production)
+```
+
+The sender (the studio's own pickup point) is configured under `Econt:Sender` in
+`appsettings.json`.
+
+> **Notes / next steps:** the quote amount is currently trusted from the client — a
+> production build should re-price server-side before charging. The office picker uses a
+> city→office dropdown; Econt's embeddable widget is the production upgrade. Label creation
+> runs on the confirmation page; a Stripe `checkout.session.completed` webhook would make it
+> robust against the customer never opening that page.
+
+---
+
 ## 🚀 Future Integrations
 
 - **Database (Supabase)**: Replace `MockProductService` in `Program.cs` with a client implementing `IProductService` communicating with your Supabase database endpoints.
