@@ -69,7 +69,7 @@ Also in Supabase → Authentication → Providers → Email: for local dev, turn
 - Create: `src/MyMiniCar.Api/Data/ProfileRepository.cs`
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Add the JwtBearer package**
+- [x] **Step 1: Add the JwtBearer package**
 
 Run:
 ```bash
@@ -78,7 +78,7 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 7.0.2
 ```
 Expected: package added to csproj, restore succeeds.
 
-- [ ] **Step 2: Create ProfileRepository**
+- [x] **Step 2: Create ProfileRepository**
 
 `src/MyMiniCar.Api/Data/ProfileRepository.cs`:
 ```csharp
@@ -105,7 +105,7 @@ public sealed class ProfileRepository
 }
 ```
 
-- [ ] **Step 3: Configure auth in Program.cs**
+- [x] **Step 3: Configure auth in Program.cs**
 
 Add usings at the top of `src/MyMiniCar.Api/Program.cs`:
 ```csharp
@@ -148,7 +148,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 ```
 
-- [ ] **Step 4: Add the /api/auth/me endpoint**
+- [x] **Step 4: Add the /api/auth/me endpoint**
 
 In `src/MyMiniCar.Api/Program.cs`, add near the product endpoints:
 ```csharp
@@ -165,7 +165,7 @@ app.MapGet("/api/auth/me", async (ClaimsPrincipal user, ProfileRepository profil
 }).RequireAuthorization();
 ```
 
-- [ ] **Step 5: Build + verify unauthorized is rejected**
+- [x] **Step 5: Build + verify unauthorized is rejected**
 
 Run:
 ```bash
@@ -173,7 +173,7 @@ cd src/MyMiniCar.Api && dotnet build
 ```
 Expected: Build succeeded, 0 errors. (Requires `Supabase:Url` + `Supabase:JwtSecret` set, per USER ACTIONS, for the app to start — build itself does not need them.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/MyMiniCar.Api.csproj src/MyMiniCar.Api/Data/ProfileRepository.cs src/MyMiniCar.Api/Program.cs

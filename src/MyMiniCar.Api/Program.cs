@@ -1,6 +1,9 @@
 using System.Globalization;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MyMiniCar.Api;
 using MyMiniCar.Api.Data;
 using MyMiniCar.Api.Models;
@@ -41,6 +44,28 @@ builder.Services.AddHttpClient<EcontService>((sp, http) =>
 builder.Services.AddSingleton<SupabaseDataSource>();
 builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<OrderRepository>();
+builder.Services.AddScoped<ProfileRepository>();
+
+var supabaseUrl = builder.Configuration["Supabase:Url"]
+    ?? throw new InvalidOperationException("Supabase:Url not configured.");
+var jwtSecret = builder.Configuration["Supabase:JwtSecret"]
+    ?? throw new InvalidOperationException("Supabase:JwtSecret not configured.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = $"{supabaseUrl.TrimEnd('/')}/auth/v1",
+            ValidateAudience = true,
+            ValidAudience = "authenticated",
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            ValidateLifetime = true
+        };
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
@@ -49,6 +74,8 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
 
 app.UseResponseCompression();
 app.UseCors(CorsPolicy);
+app.UseAuthentication();
+app.UseAuthorization();
 
 _ = Task.Run(async () =>
 {
@@ -338,6 +365,18 @@ app.MapGet("/api/products/{id}", async (string id, ProductRepository repo) =>
     var product = await repo.GetByIdAsync(id);
     return product is null ? Results.NotFound() : Results.Ok(product);
 });
+
+app.MapGet("/api/auth/me", async (ClaimsPrincipal user, ProfileRepository profiles) =>
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier)
+              ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId))
+        return Results.Unauthorized();
+
+    var email = user.FindFirstValue(ClaimTypes.Email) ?? user.FindFirstValue("email");
+    var role = await profiles.GetRoleAsync(userId);
+    return Results.Ok(new { id = userId, email, role });
+}).RequireAuthorization();
 
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.
 app.MapGet("/api/health/db", async (SupabaseDataSource db) =>
