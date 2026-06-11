@@ -1,0 +1,34 @@
+@page "/register"
+@using MyMiniCar.Web.Auth
+@inject SupabaseAuthService Auth
+@inject SupabaseAuthStateProvider AuthState
+@inject NavigationManager Nav
+
+<PageTitle>Register</PageTitle>
+<div class="auth-card">
+    <h1>Create account</h1>
+    <input placeholder="Full name" @bind="_name" />
+    <input type="email" placeholder="Email" @bind="_email" />
+    <input type="password" placeholder="Password" @bind="_password" />
+    <button disabled="@_busy" @onclick="DoRegister">@(_busy ? "..." : "Register")</button>
+    @if (_error is not null) { <p class="auth-error">@_error</p> }
+    <p>Already have an account? <a href="/login">Log in</a></p>
+</div>
+
+@code {
+    private string _name = "", _email = "", _password = "";
+    private string? _error;
+    private bool _busy;
+
+    private async Task DoRegister()
+    {
+        _busy = true; _error = null;
+        _error = await Auth.RegisterAsync(_email, _password, _name);
+        _busy = false;
+        if (_error is null)
+        {
+            AuthState.NotifyChanged();
+            Nav.NavigateTo("/");
+        }
+    }
+}

@@ -1,6 +1,10 @@
+@using MyMiniCar.Web.Auth
 @inject CartService CartService
 @inject LanguageService Language
 @inject IJSRuntime JS
+@inject SupabaseAuthService Auth
+@inject SupabaseAuthStateProvider AuthState
+@inject NavigationManager Nav
 @implements IDisposable
 
 <nav class="navbar navbar-expand-lg mmc-navbar">
@@ -46,6 +50,19 @@
                     <span class="cart-badge">@CartService.GetCount()</span>
                 }
             </button>
+            <AuthorizeView>
+                <Authorized>
+                    <span class="nav-user d-none d-sm-inline">@context.User.FindFirst("email")?.Value</span>
+                    <button class="icon-btn" @onclick="Logout" aria-label='@Language.T("Log out")' title='@Language.T("Log out")'>
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="login" class="icon-btn" @onclick="CloseNavMenu" aria-label='@Language.T("Log in")' title='@Language.T("Log in")'>
+                        <i class="bi bi-person"></i>
+                    </a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </div>
 </nav>
@@ -62,6 +79,14 @@
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
     private void CloseNavMenu() => collapseNavMenu = true;
     private void ToggleCart() => CartService.ToggleCart();
+
+    private async Task Logout()
+    {
+        await Auth.LogoutAsync();
+        AuthState.NotifyChanged();
+        CloseNavMenu();
+        Nav.NavigateTo("/");
+    }
     private async Task ToggleLanguage()
     {
         Language.Toggle();

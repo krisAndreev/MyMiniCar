@@ -444,7 +444,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Pages/Register.razor`
 - Modify: `src/MyMiniCar.Web/Shared/NavMenu.razor`
 
-- [ ] **Step 1: Create Login.razor**
+- [x] **Step 1: Create Login.razor**
 
 `src/MyMiniCar.Web/Pages/Login.razor`:
 ```razor
@@ -484,7 +484,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 }
 ```
 
-- [ ] **Step 2: Create Register.razor**
+- [x] **Step 2: Create Register.razor**
 
 `src/MyMiniCar.Web/Pages/Register.razor`:
 ```razor
@@ -525,7 +525,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 }
 ```
 
-- [ ] **Step 3: Add login/logout to NavMenu**
+- [x] **Step 3: Add login/logout to NavMenu**
 
 In `src/MyMiniCar.Web/Shared/NavMenu.razor`, add an auth-aware block (place inside the existing nav markup where appropriate). At the top of the file add `@using` lines if not present:
 ```razor
@@ -560,12 +560,12 @@ Code block (merge into the existing `@code` if present):
 }
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Pages/Login.razor src/MyMiniCar.Web/Pages/Register.razor src/MyMiniCar.Web/Shared/NavMenu.razor
