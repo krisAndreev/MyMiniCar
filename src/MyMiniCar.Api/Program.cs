@@ -48,12 +48,13 @@ builder.Services.AddScoped<ProfileRepository>();
 
 var supabaseUrl = builder.Configuration["Supabase:Url"]
     ?? throw new InvalidOperationException("Supabase:Url not configured.");
-var jwtSecret = builder.Configuration["Supabase:JwtSecret"]
-    ?? throw new InvalidOperationException("Supabase:JwtSecret not configured.");
 
+// Supabase signs user tokens with rotating asymmetric keys (ES256). Discover the
+// public JWKS via the project's OpenID configuration; JwtBearer auto-refreshes it.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MetadataAddress = $"{supabaseUrl.TrimEnd('/')}/auth/v1/.well-known/openid-configuration";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -61,7 +62,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = "authenticated",
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ValidateLifetime = true
         };
     });
