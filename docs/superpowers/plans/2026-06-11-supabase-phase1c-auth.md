@@ -191,7 +191,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Services/TokenStore.cs`
 - Create: `src/MyMiniCar.Web/Services/SupabaseAuthService.cs`
 
-- [ ] **Step 1: Ensure appsettings.json exists**
+- [x] **Step 1: Ensure appsettings.json exists**
 
 If `src/MyMiniCar.Web/wwwroot/appsettings.json` does not exist, create it (real values per USER ACTIONS):
 ```json
@@ -205,7 +205,7 @@ If `src/MyMiniCar.Web/wwwroot/appsettings.json` does not exist, create it (real 
 ```
 If it already exists, add the `Supabase` section to it.
 
-- [ ] **Step 2: Create the token store**
+- [x] **Step 2: Create the token store**
 
 `src/MyMiniCar.Web/Services/TokenStore.cs`:
 ```csharp
@@ -232,7 +232,7 @@ public sealed class TokenStore
 }
 ```
 
-- [ ] **Step 3: Create the auth service**
+- [x] **Step 3: Create the auth service**
 
 `src/MyMiniCar.Web/Services/SupabaseAuthService.cs`:
 ```csharp
@@ -297,12 +297,12 @@ public sealed class SupabaseAuthService
 }
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/wwwroot/appsettings.json src/MyMiniCar.Web/Services/TokenStore.cs src/MyMiniCar.Web/Services/SupabaseAuthService.cs
