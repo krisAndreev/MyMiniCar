@@ -46,7 +46,7 @@
 - Create: `src/MyMiniCar.Api/Models/OrderModels.cs`
 - Create: `src/MyMiniCar.Api/Data/OrderRepository.cs`
 
-- [ ] **Step 1: Create the models**
+- [x] **Step 1: Create the models**
 
 `src/MyMiniCar.Api/Models/OrderModels.cs`:
 ```csharp
@@ -72,7 +72,7 @@ public sealed record PaidOrderInput(
     IReadOnlyList<OrderLineInput> Items);
 ```
 
-- [ ] **Step 2: Create the repository**
+- [x] **Step 2: Create the repository**
 
 `src/MyMiniCar.Api/Data/OrderRepository.cs`:
 ```csharp
@@ -144,12 +144,12 @@ public sealed class OrderRepository
 }
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Api && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/OrderModels.cs src/MyMiniCar.Api/Data/OrderRepository.cs
