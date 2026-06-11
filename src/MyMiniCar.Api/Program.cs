@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using MyMiniCar.Api;
+using MyMiniCar.Api.Data;
 using Stripe;
 using Stripe.Checkout;
 
@@ -35,6 +36,8 @@ builder.Services.AddHttpClient<EcontService>((sp, http) =>
     var token = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{user}:{pass}"));
     http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
 });
+
+builder.Services.AddSingleton<SupabaseDataSource>();
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
@@ -238,6 +241,21 @@ app.MapPost("/api/shipping/label", async (CreateLabelRequest req, EcontService e
     catch (Exception ex)
     {
         return Results.Problem($"Econt error: {ex.Message}");
+    }
+});
+
+// DB connectivity probe. Returns 200 if the Supabase Postgres responds.
+app.MapGet("/api/health/db", async (SupabaseDataSource db) =>
+{
+    try
+    {
+        return await db.CanConnectAsync()
+            ? Results.Ok(new { db = "ok" })
+            : Results.Problem("DB probe returned unexpected result.");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"DB connect failed: {ex.Message}");
     }
 });
 

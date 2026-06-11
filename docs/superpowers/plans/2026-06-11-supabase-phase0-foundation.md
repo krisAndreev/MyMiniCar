@@ -386,7 +386,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `src/MyMiniCar.Api/Program.cs`
 - Create: `supabase/README.md`
 
-- [ ] **Step 1: Add the package**
+- [x] **Step 1: Add the package**
 
 Run:
 ```bash
@@ -395,7 +395,7 @@ dotnet add package Supabase
 ```
 Expected: `Supabase` (the `supabase-csharp` meta-package) added to `MyMiniCar.Api.csproj`.
 
-- [ ] **Step 2: Create the client factory**
+- [x] **Step 2: Create the client factory**
 
 Create `src/MyMiniCar.Api/Data/SupabaseClientFactory.cs`:
 ```csharp
@@ -432,7 +432,7 @@ public sealed class SupabaseClientFactory
 }
 ```
 
-- [ ] **Step 3: Register it + add health endpoint in `Program.cs`**
+- [x] **Step 3: Register it + add health endpoint in `Program.cs`**
 
 In `src/MyMiniCar.Api/Program.cs`, add the using near the top (after the existing `using MyMiniCar.Api;`):
 ```csharp
@@ -459,7 +459,7 @@ app.MapGet("/api/health/db", async (SupabaseClientFactory factory) =>
 });
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run:
 ```bash
@@ -468,7 +468,7 @@ dotnet build
 ```
 Expected: Build succeeded, 0 errors. (Endpoint returns 500 until USER ACTION secrets are set — that's expected; build correctness is what we verify here.)
 
-- [ ] **Step 5: Write `supabase/README.md`**
+- [x] **Step 5: Write `supabase/README.md`**
 
 ```markdown
 # Supabase
@@ -488,7 +488,7 @@ dotnet user-secrets set "Supabase:ServiceRoleKey" "<service_role_key>"
 Run the Api, then GET /api/health/db → {"db":"ok"}.
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/MyMiniCar.Api.csproj src/MyMiniCar.Api/Data/SupabaseClientFactory.cs src/MyMiniCar.Api/Program.cs supabase/README.md
@@ -504,6 +504,12 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - **Spec coverage:** Phase 0 = schema ✓ (Task 1), RLS ✓ (Task 2), signup trigger ✓ (Task 3), seed products ✓ (Task 4), Api data-layer wiring ✓ (Task 5). Auth middleware, Stripe webhook, ApiProductService = Phase 1 (separate plan). AI gen = Phase 4.
 - **Placeholders:** none — all SQL/C# is complete.
 - **Type consistency:** `SupabaseClientFactory` defined Task 5 Step 2, used Step 3; `is_admin()` defined Task 2 used across policies.
+
+## Execution deviations (Task 5)
+
+- **`MyMiniCar.Api` was targeting `net9.0`** while the machine SDK + Render build channel + the other projects are all `net7.0`. Changed to `net7.0` to unblock package restore and match the toolchain.
+- **Server-side uses Npgsql (direct Postgres), not the `Supabase` C# SDK.** The SDK's transitive deps require net9, which this SDK can't restore; Npgsql 7.0.7 is net7-compatible and cleaner for the Api-mediated approach. Files: `Data/SupabaseDataSource.cs` (not `SupabaseClientFactory.cs`).
+- **Secret is now `Supabase:ConnectionString`** (the Supabase Postgres connection string) instead of `Supabase:Url` + `Supabase:ServiceRoleKey`. Render env var: `Supabase__ConnectionString`.
 
 ## Phase 0 Done = 
 All 5 task commits landed; `dotnet build` green; (after USER ACTIONS) `GET /api/health/db` → `{"db":"ok"}` and `select count(*) from products` = 8.
