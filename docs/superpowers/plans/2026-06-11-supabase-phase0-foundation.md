@@ -325,7 +325,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 Source data = `src/MyMiniCar.Web/Services/MockProductService.cs` (8 products). `sort_order` follows list order.
 
-- [ ] **Step 1: Write seed SQL**
+- [x] **Step 1: Write seed SQL**
 
 ```sql
 -- seed.sql — initial catalog, mirrors MockProductService
@@ -365,9 +365,9 @@ on conflict (id) do update set
   updated_at = now();
 ```
 
-- [ ] **Step 2: Verify** — count = 8 rows, prices/ids match `MockProductService.cs`, note `''` escaping in display-stand description.
+- [x] **Step 2: Verify** — count = 8 rows, prices/ids match `MockProductService.cs`, note `''` escaping in display-stand description.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add supabase/seed.sql
