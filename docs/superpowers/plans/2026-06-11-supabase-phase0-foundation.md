@@ -183,7 +183,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Create: `supabase/migrations/0002_rls.sql`
 
-- [ ] **Step 1: Write RLS SQL**
+- [x] **Step 1: Write RLS SQL**
 
 ```sql
 -- 0002_rls.sql — Row-Level Security
@@ -261,9 +261,9 @@ create policy ai_admin_read on public.ai_generations
   for select using (public.is_admin());
 ```
 
-- [ ] **Step 2: Verify** — eyeball for balanced `$$`, every table has RLS enabled + at least one policy.
+- [x] **Step 2: Verify** — eyeball for balanced `$$`, every table has RLS enabled + at least one policy.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add supabase/migrations/0002_rls.sql
