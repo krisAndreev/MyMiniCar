@@ -620,8 +620,20 @@ git commit -m "docs: Phase 1C complete"
 - **Type consistency:** `SupabaseAuthService` ctor `(supabaseUrl, anonKey, TokenStore)` matches the DI registration (Task 3 Step 3); `SupabaseAuthStateProvider.NotifyChanged()` called from Login/Register/NavMenu; `/api/auth/me` reads `sub`/`email` claims that Supabase JWTs carry.
 - **Net7 safety:** no Supabase C# SDK used; browser hits GoTrue REST directly; `System.IdentityModel.Tokens.Jwt` 7.1.2 + JwtBearer 7.0.20 are net7-compatible.
 
+## Execution note (Task 5 verification, 2026-06-11)
+
+Server-side auth verified end-to-end with a JWT minted from the project secret:
+`/api/auth/me` returned `{role:"customer"}` for a valid token and `401` for a
+tampered one — proving signature/issuer/audience validation + role lookup.
+
+GoTrue signup/login round-trip NOT yet verified live: Supabase's per-project
+**email send rate limit** (free tier, ~1h window) was tripped during testing and
+blocks new signups for a cooldown. Retry browser register/login after it resets;
+the server half is already proven.
+
 ## Phase 1C Done =
-Tasks 1–4 committed; both projects build green; (after USER ACTIONS) register/login works, NavMenu reflects auth, `/api/auth/me` returns the role, and a `profiles` row auto-appears.
+Tasks 1–4 committed; both projects build green; Api auth proven via minted token.
+Remaining: browser register/login smoke once the email rate limit resets.
 
 ## Next: Phase 1D — Account pages + order linking
 Attach the JWT to Api-bound HttpClients; `GET /api/orders/mine`; order-history + saved-designs pages; stamp `orders.user_id` at checkout when the buyer is logged in.
