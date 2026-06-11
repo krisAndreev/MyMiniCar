@@ -33,7 +33,7 @@
 - Modify: `src/MyMiniCar.Api/Models/OrderModels.cs`
 - Modify: `src/MyMiniCar.Api/Data/OrderRepository.cs`
 
-- [ ] **Step 1: Add UserId to PaidOrderInput + read DTOs**
+- [x] **Step 1: Add UserId to PaidOrderInput + read DTOs**
 
 In `src/MyMiniCar.Api/Models/OrderModels.cs`, add `UserId` as the first member of `PaidOrderInput`:
 ```csharp
@@ -67,7 +67,7 @@ public sealed record OrderView(
     IReadOnlyList<OrderItemView> Items);
 ```
 
-- [ ] **Step 2: Persist user_id in the insert**
+- [x] **Step 2: Persist user_id in the insert**
 
 In `src/MyMiniCar.Api/Data/OrderRepository.cs`, change the insert to include `user_id`. Replace the insert command's column list/values + first parameter:
 ```csharp
@@ -103,7 +103,7 @@ In `src/MyMiniCar.Api/Data/OrderRepository.cs`, change the insert to include `us
 ```
 (The `order_items` insert loop below it stays unchanged.)
 
-- [ ] **Step 3: Add GetByUserAsync**
+- [x] **Step 3: Add GetByUserAsync**
 
 Add this method to `OrderRepository`:
 ```csharp
@@ -138,14 +138,14 @@ Add this method to `OrderRepository`:
     }
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `cd src/MyMiniCar.Api && dotnet build`
 Expected: 0 errors. (The webhook in Program.cs still constructs `PaidOrderInput` without `UserId` — it will fail to compile until Task 2 adds the argument. If so, proceed to Task 2 before building; otherwise this builds clean.)
 
 NOTE: Because adding `UserId` as the first positional arg breaks the webhook's `new PaidOrderInput(...)`, do Task 2 Step 2 in the SAME turn as this task so the project compiles. Commit both together at the end of Task 2.
 
-- [ ] **Step 5: (deferred commit — see Task 2)**
+- [x] **Step 5: (deferred commit — see Task 2)**
 
 ---
 
@@ -154,7 +154,7 @@ NOTE: Because adding `UserId` as the first positional arg breaks the webhook's `
 **Files:**
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Stamp user_id into create-session metadata**
+- [x] **Step 1: Stamp user_id into create-session metadata**
 
 In the `/api/checkout/create-session` endpoint, add an optional `ClaimsPrincipal user` parameter to the handler signature:
 ```csharp
@@ -168,7 +168,7 @@ Then, in the `Metadata` dictionary, add a `user_id` entry (empty string when ano
 ```
 (Add the trailing comma to the existing `shipping_amount` line.)
 
-- [ ] **Step 2: Read user_id in the webhook**
+- [x] **Step 2: Read user_id in the webhook**
 
 In the webhook handler, where `PaidOrderInput` is constructed, parse the metadata user id and pass it as the new first argument:
 ```csharp
@@ -190,7 +190,7 @@ In the webhook handler, where `PaidOrderInput` is constructed, parse the metadat
         Items: items);
 ```
 
-- [ ] **Step 3: Add GET /api/orders/mine**
+- [x] **Step 3: Add GET /api/orders/mine**
 
 Near `/api/auth/me`, add:
 ```csharp
@@ -203,7 +203,7 @@ app.MapGet("/api/orders/mine", async (ClaimsPrincipal user, OrderRepository orde
 }).RequireAuthorization();
 ```
 
-- [ ] **Step 4: Build + smoke**
+- [x] **Step 4: Build + smoke**
 
 Run:
 ```bash
@@ -217,7 +217,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: `no-auth=401`.
 
-- [ ] **Step 5: Commit (Tasks 1 + 2 together)**
+- [x] **Step 5: Commit (Tasks 1 + 2 together)**
 
 ```bash
 git add src/MyMiniCar.Api/Models/OrderModels.cs src/MyMiniCar.Api/Data/OrderRepository.cs src/MyMiniCar.Api/Program.cs

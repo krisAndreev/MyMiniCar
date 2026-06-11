@@ -89,7 +89,7 @@ _ = Task.Run(async () =>
 
 const string Currency = "eur";
 
-app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
+app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req, ClaimsPrincipal user) =>
 {
     if (req.Items is null || req.Items.Count == 0)
         return Results.BadRequest(new { error = "Cart is empty." });
@@ -151,7 +151,9 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
             ["shipping_postal"] = req.PostalCode ?? string.Empty,
             ["shipping_country"] = req.Country ?? string.Empty,
             ["weight_kg"] = req.WeightKg.ToString(CultureInfo.InvariantCulture),
-            ["shipping_amount"] = req.ShippingAmount.ToString(CultureInfo.InvariantCulture)
+            ["shipping_amount"] = req.ShippingAmount.ToString(CultureInfo.InvariantCulture),
+            ["user_id"] = user.FindFirstValue(ClaimTypes.NameIdentifier)
+                          ?? user.FindFirstValue("sub") ?? string.Empty
         }
     };
 
@@ -227,7 +229,10 @@ app.MapPost("/api/stripe/webhook", async (HttpRequest request, OrderRepository o
         weight_kg = m.GetValueOrDefault("weight_kg")
     });
 
+    Guid? userId = Guid.TryParse(m.GetValueOrDefault("user_id"), out var uid) ? uid : null;
+
     var input = new PaidOrderInput(
+        UserId: userId,
         StripeSessionId: session.Id,
         Email: session.CustomerDetails?.Email ?? session.CustomerEmail,
         CustomerName: m.GetValueOrDefault("customer_name"),
@@ -376,6 +381,14 @@ app.MapGet("/api/auth/me", async (ClaimsPrincipal user, ProfileRepository profil
     var email = user.FindFirstValue(ClaimTypes.Email) ?? user.FindFirstValue("email");
     var role = await profiles.GetRoleAsync(userId);
     return Results.Ok(new { id = userId, email, role });
+}).RequireAuthorization();
+
+app.MapGet("/api/orders/mine", async (ClaimsPrincipal user, OrderRepository orders) =>
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId))
+        return Results.Unauthorized();
+    return Results.Ok(await orders.GetByUserAsync(userId));
 }).RequireAuthorization();
 
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.
