@@ -57,4 +57,80 @@ public sealed class ProductRepository
         }
         return list;
     }
+
+    private const string AdminColumns = @"
+        id, name, description, name_bg, description_bg, price, category,
+        image_url, display_model_url, print_model_url, default_material, dimensions,
+        weight_grams, coalesce(tile_class,'fil-blue'), is_featured, is_active, sort_order";
+
+    public async Task<List<AdminProductView>> GetAllAsync(CancellationToken ct = default)
+    {
+        await using var cmd = _db.DataSource.CreateCommand(
+            $"select {AdminColumns} from public.products order by sort_order, name");
+        var list = new List<AdminProductView>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(MapAdmin(r));
+        return list;
+    }
+
+    private static AdminProductView MapAdmin(System.Data.Common.DbDataReader r) => new(
+        r.GetString(0), r.GetString(1), r.GetString(2),
+        r.IsDBNull(3) ? null : r.GetString(3),
+        r.IsDBNull(4) ? null : r.GetString(4),
+        r.GetDecimal(5), r.GetString(6),
+        r.IsDBNull(7) ? null : r.GetString(7),
+        r.IsDBNull(8) ? null : r.GetString(8),
+        r.IsDBNull(9) ? null : r.GetString(9),
+        r.IsDBNull(10) ? null : r.GetString(10),
+        r.IsDBNull(11) ? null : r.GetString(11),
+        r.GetInt32(12), r.GetString(13),
+        r.GetBoolean(14), r.GetBoolean(15), r.GetInt32(16));
+
+    /// <summary>Insert or update a product by id.</summary>
+    public async Task UpsertAsync(ProductWrite p, CancellationToken ct = default)
+    {
+        await using var cmd = _db.DataSource.CreateCommand(@"
+            insert into public.products
+              (id, name, description, name_bg, description_bg, price, category,
+               image_url, display_model_url, print_model_url, default_material, dimensions,
+               weight_grams, tile_class, is_featured, is_active, sort_order, updated_at)
+            values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17, now())
+            on conflict (id) do update set
+              name=excluded.name, description=excluded.description,
+              name_bg=excluded.name_bg, description_bg=excluded.description_bg,
+              price=excluded.price, category=excluded.category, image_url=excluded.image_url,
+              display_model_url=excluded.display_model_url, print_model_url=excluded.print_model_url,
+              default_material=excluded.default_material, dimensions=excluded.dimensions,
+              weight_grams=excluded.weight_grams, tile_class=excluded.tile_class,
+              is_featured=excluded.is_featured, is_active=excluded.is_active,
+              sort_order=excluded.sort_order, updated_at=now()");
+        cmd.Parameters.AddWithValue(p.Id);
+        cmd.Parameters.AddWithValue(p.Name);
+        cmd.Parameters.AddWithValue(p.Description);
+        cmd.Parameters.AddWithValue((object?)p.NameBg ?? DBNull.Value);
+        cmd.Parameters.AddWithValue((object?)p.DescriptionBg ?? DBNull.Value);
+        cmd.Parameters.AddWithValue(p.Price);
+        cmd.Parameters.AddWithValue(p.Category);
+        cmd.Parameters.AddWithValue((object?)p.ImageUrl ?? DBNull.Value);
+        cmd.Parameters.AddWithValue((object?)p.DisplayModelUrl ?? DBNull.Value);
+        cmd.Parameters.AddWithValue((object?)p.PrintModelUrl ?? DBNull.Value);
+        cmd.Parameters.AddWithValue((object?)p.DefaultMaterial ?? DBNull.Value);
+        cmd.Parameters.AddWithValue((object?)p.Dimensions ?? DBNull.Value);
+        cmd.Parameters.AddWithValue(p.WeightGrams);
+        cmd.Parameters.AddWithValue(string.IsNullOrWhiteSpace(p.TileClass) ? "fil-blue" : p.TileClass);
+        cmd.Parameters.AddWithValue(p.IsFeatured);
+        cmd.Parameters.AddWithValue(p.IsActive);
+        cmd.Parameters.AddWithValue(p.SortOrder);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<bool> SetActiveAsync(string id, bool active, CancellationToken ct = default)
+    {
+        await using var cmd = _db.DataSource.CreateCommand(
+            "update public.products set is_active=$2, updated_at=now() where id=$1");
+        cmd.Parameters.AddWithValue(id);
+        cmd.Parameters.AddWithValue(active);
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
+    }
 }

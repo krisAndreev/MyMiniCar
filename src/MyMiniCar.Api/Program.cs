@@ -415,6 +415,39 @@ app.MapDelete("/api/designs/{id:guid}", async (Guid id, ClaimsPrincipal user, De
     return await designs.DeleteAsync(userId, id) ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization();
 
+// Returns null if the caller is an admin, otherwise the IResult to short-circuit with.
+async Task<IResult?> RequireAdmin(ClaimsPrincipal user, ProfileRepository profiles)
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId)) return Results.Unauthorized();
+    var role = await profiles.GetRoleAsync(userId);
+    return role == "admin" ? null : Results.Forbid();
+}
+
+app.MapGet("/api/admin/products", async (ClaimsPrincipal user, ProfileRepository profiles, ProductRepository products) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    return Results.Ok(await products.GetAllAsync());
+}).RequireAuthorization();
+
+app.MapPost("/api/admin/products", async (ProductWrite body, ClaimsPrincipal user, ProfileRepository profiles, ProductRepository products) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    if (string.IsNullOrWhiteSpace(body.Id) || string.IsNullOrWhiteSpace(body.Name))
+        return Results.BadRequest(new { error = "Id and Name are required." });
+    await products.UpsertAsync(body);
+    return Results.Ok(new { id = body.Id });
+}).RequireAuthorization();
+
+app.MapPost("/api/admin/products/{id}/active", async (string id, bool active, ClaimsPrincipal user, ProfileRepository profiles, ProductRepository products) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    return await products.SetActiveAsync(id, active) ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization();
+
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.
 app.MapGet("/api/health/db", async (SupabaseDataSource db) =>
 {

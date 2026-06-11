@@ -34,7 +34,7 @@
 - Modify: `src/MyMiniCar.Api/Data/ProductRepository.cs`
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Create the admin product models**
+- [x] **Step 1: Create the admin product models**
 
 `src/MyMiniCar.Api/Models/AdminProductModels.cs`:
 ```csharp
@@ -55,7 +55,7 @@ public sealed record ProductWrite(
     bool IsFeatured, bool IsActive, int SortOrder);
 ```
 
-- [ ] **Step 2: Add admin reads/writes to ProductRepository**
+- [x] **Step 2: Add admin reads/writes to ProductRepository**
 
 Append these methods to `ProductRepository` (after `GetByIdAsync`):
 ```csharp
@@ -137,7 +137,7 @@ Append these methods to `ProductRepository` (after `GetByIdAsync`):
 ```
 NOTE: add `using System.Data.Common;` is unnecessary — the helper uses the fully-qualified `System.Data.Common.DbDataReader`.
 
-- [ ] **Step 3: Add an admin check + endpoints to Program.cs**
+- [x] **Step 3: Add an admin check + endpoints to Program.cs**
 
 Add a local helper near the top of the endpoint section (after `var app = builder.Build();` block, before the endpoints), as a static local function at file scope is not possible in top-level statements that need DI — instead inline the check in each endpoint via `ProfileRepository`. Add the admin endpoints near the product endpoints:
 ```csharp
@@ -177,7 +177,7 @@ async Task<IResult?> RequireAdmin(ClaimsPrincipal user, ProfileRepository profil
 }
 ```
 
-- [ ] **Step 4: Build + smoke**
+- [x] **Step 4: Build + smoke**
 
 Run:
 ```bash
@@ -188,7 +188,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: 0 errors; `admin-anon=401`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/AdminProductModels.cs src/MyMiniCar.Api/Data/ProductRepository.cs src/MyMiniCar.Api/Program.cs
