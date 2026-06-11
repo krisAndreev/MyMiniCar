@@ -287,7 +287,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none (verification). Requires USER ACTION 1 (Stripe CLI + `Stripe:WebhookSecret`).
 
-- [ ] **Step 1: Trigger a test event**
+- [x] **Step 1: Trigger a test event**
 
 In one terminal: `stripe listen --forward-to http://localhost:5230/api/stripe/webhook`
 In another:
@@ -300,7 +300,7 @@ sleep 4
 ```
 Expected: Api log shows the webhook hit with 200; no exceptions.
 
-- [ ] **Step 2: Verify a row landed**
+- [x] **Step 2: Verify a row landed**
 
 ```bash
 export PGPASSWORD='<db-password>'
@@ -310,11 +310,11 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: one `paid` row (a `stripe trigger` test session; amounts reflect Stripe's fixture).
 
-- [ ] **Step 3: Verify idempotency**
+- [x] **Step 3: Verify idempotency**
 
 Re-run `stripe trigger checkout.session.completed` against the SAME session is not possible (trigger makes a new session each time), so instead confirm the unique constraint by re-POSTing a duplicate is a no-op in code review: `PersistPaidAsync` returns false on conflict. Mark verified.
 
-- [ ] **Step 4: Mark plan complete + commit**
+- [x] **Step 4: Mark plan complete + commit**
 
 Tick all boxes, then:
 ```bash
