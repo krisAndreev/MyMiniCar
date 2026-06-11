@@ -19,7 +19,8 @@ builder.Services.AddScoped<IProductService>(_ => new ApiProductService(apiBaseUr
 builder.Services.AddSingleton<CartService>();
 builder.Services.AddSingleton<LanguageService>();
 
-builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
+builder.Services.AddScoped(sp => new CheckoutService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
+builder.Services.AddScoped(sp => new OrdersService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 builder.Services.AddSingleton(_ => new ShippingService(apiBaseUrl));
 
 // Auth (Supabase)

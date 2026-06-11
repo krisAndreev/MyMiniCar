@@ -9,15 +9,25 @@ namespace MyMiniCar.Web.Services;
 public class CheckoutService
 {
     private readonly HttpClient _http;
+    private readonly TokenStore _tokens;
 
-    public CheckoutService(string apiBaseUrl)
+    public CheckoutService(string apiBaseUrl, TokenStore tokens)
     {
         _http = new HttpClient { BaseAddress = new Uri(apiBaseUrl) };
+        _tokens = tokens;
     }
 
     public async Task<CreateSessionResult?> CreateSessionAsync(CreateCheckoutRequest request)
     {
-        var response = await _http.PostAsJsonAsync("/api/checkout/create-session", request);
+        var http = new HttpRequestMessage(HttpMethod.Post, "/api/checkout/create-session")
+        {
+            Content = System.Net.Http.Json.JsonContent.Create(request)
+        };
+        var token = await _tokens.GetAsync();
+        if (!string.IsNullOrWhiteSpace(token))
+            http.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _http.SendAsync(http);
         if (!response.IsSuccessStatusCode)
             return null;
 

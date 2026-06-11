@@ -1,0 +1,47 @@
+@page "/account"
+@attribute [Authorize]
+@using MyMiniCar.Web.Services
+@inject OrdersService Orders
+
+<PageTitle>My orders</PageTitle>
+<div class="account-page">
+    <h1>My orders</h1>
+    @if (_loading)
+    {
+        <p>Loading…</p>
+    }
+    else if (_orders is null || _orders.Count == 0)
+    {
+        <p>No orders yet.</p>
+    }
+    else
+    {
+        @foreach (var o in _orders)
+        {
+            <div class="order-card">
+                <div class="order-head">
+                    <span class="order-date">@o.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                    <span class="order-status">@o.Status</span>
+                    <span class="order-total">@o.Total.ToString("0.00") @o.Currency.ToUpperInvariant()</span>
+                </div>
+                <ul class="order-items">
+                    @foreach (var it in o.Items)
+                    {
+                        <li>@it.Quantity × @it.Name — @it.UnitPrice.ToString("0.00")</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<OrderView>? _orders;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orders = await Orders.GetMineAsync();
+        _loading = false;
+    }
+}

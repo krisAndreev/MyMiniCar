@@ -237,7 +237,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Pages/Account.razor`
 - Modify: `src/MyMiniCar.Web/Shared/NavMenu.razor`
 
-- [ ] **Step 1: Make CheckoutService attach the bearer token**
+- [x] **Step 1: Make CheckoutService attach the bearer token**
 
 Replace `src/MyMiniCar.Web/Services/CheckoutService.cs` constructor + create call so it sends the JWT when present. Change the class to take a `TokenStore`:
 ```csharp
@@ -276,7 +276,7 @@ public class CheckoutService
 ```
 Keep the existing `using System.Net.Http.Json;` at the top and all the record definitions below the class unchanged.
 
-- [ ] **Step 2: Create OrdersService**
+- [x] **Step 2: Create OrdersService**
 
 `src/MyMiniCar.Web/Services/OrdersService.cs`:
 ```csharp
@@ -316,7 +316,7 @@ public sealed record OrderView(
     DateTime CreatedAt, List<OrderItemView> Items);
 ```
 
-- [ ] **Step 3: Wire DI in Program.cs**
+- [x] **Step 3: Wire DI in Program.cs**
 
 In `src/MyMiniCar.Web/Program.cs`, change the `CheckoutService` registration to pass the `TokenStore`, and register `OrdersService`. The `TokenStore` is registered in the auth block — make sure these lines come AFTER `builder.Services.AddScoped<TokenStore>();`. Replace:
 ```csharp
@@ -328,7 +328,7 @@ builder.Services.AddScoped(sp => new CheckoutService(apiBaseUrl, sp.GetRequiredS
 builder.Services.AddScoped(sp => new OrdersService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 ```
 
-- [ ] **Step 4: Create the Account page**
+- [x] **Step 4: Create the Account page**
 
 `src/MyMiniCar.Web/Pages/Account.razor`:
 ```razor
@@ -381,19 +381,19 @@ builder.Services.AddScoped(sp => new OrdersService(apiBaseUrl, sp.GetRequiredSer
 }
 ```
 
-- [ ] **Step 5: Add "My orders" to NavMenu**
+- [x] **Step 5: Add "My orders" to NavMenu**
 
 In `src/MyMiniCar.Web/Shared/NavMenu.razor`, inside the existing `<Authorized>` block (before the email span), add:
 ```razor
                     <a href="account" class="nav-link nav-link-mmc" @onclick="CloseNavMenu">@Language.T("My orders")</a>
 ```
 
-- [ ] **Step 6: Build**
+- [x] **Step 6: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/CheckoutService.cs src/MyMiniCar.Web/Services/OrdersService.cs src/MyMiniCar.Web/Program.cs src/MyMiniCar.Web/Pages/Account.razor src/MyMiniCar.Web/Shared/NavMenu.razor
@@ -408,7 +408,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none (verification).
 
-- [ ] **Step 1: /api/orders/mine works with a minted token**
+- [x] **Step 1: /api/orders/mine works with a minted token**
 
 ```bash
 cd src/MyMiniCar.Api
@@ -420,7 +420,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: a JSON array (empty `[]` if that user has no orders yet — proves the authed path without needing a purchase).
 
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 2: Commit plan complete**
 
 Tick all boxes:
 ```bash
