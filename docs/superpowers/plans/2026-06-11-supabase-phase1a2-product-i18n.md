@@ -30,10 +30,10 @@
 - Modify: `src/MyMiniCar.Api/Models/ProductDto.cs`
 - Modify: `src/MyMiniCar.Api/Data/ProductRepository.cs`
 
-- [ ] **Step 1: Add NameBg/DescriptionBg to ProductDto**
-- [ ] **Step 2: Select the bg columns in the repository**
-- [ ] **Step 3: Build + smoke-test endpoint shows bg fields**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: Add NameBg/DescriptionBg to ProductDto**
+- [x] **Step 2: Select the bg columns in the repository**
+- [x] **Step 3: Build + smoke-test endpoint shows bg fields**
+- [x] **Step 4: Commit**
 
 ## Task 3: Web model + LanguageService
 

@@ -11,7 +11,7 @@ public sealed class ProductRepository
     public ProductRepository(SupabaseDataSource db) => _db = db;
 
     private const string SelectColumns = @"
-        id, name, description, price,
+        id, name, description, name_bg, description_bg, price,
         coalesce(image_url, '')        as image_url,
         category,
         coalesce(default_material, '') as default_material,
@@ -44,14 +44,16 @@ public sealed class ProductRepository
                 Id:              reader.GetString(0),
                 Name:            reader.GetString(1),
                 Description:     reader.GetString(2),
-                Price:           reader.GetDecimal(3),
-                ImageUrl:        reader.GetString(4),
-                Category:        reader.GetString(5),
-                DefaultMaterial: reader.GetString(6),
-                Dimensions:      reader.GetString(7),
-                IsFeatured:      reader.GetBoolean(8),
-                WeightGrams:     reader.GetInt32(9),
-                TileClass:       reader.GetString(10)));
+                NameBg:          reader.IsDBNull(3) ? null : reader.GetString(3),
+                DescriptionBg:   reader.IsDBNull(4) ? null : reader.GetString(4),
+                Price:           reader.GetDecimal(5),
+                ImageUrl:        reader.GetString(6),
+                Category:        reader.GetString(7),
+                DefaultMaterial: reader.GetString(8),
+                Dimensions:      reader.GetString(9),
+                IsFeatured:      reader.GetBoolean(10),
+                WeightGrams:     reader.GetInt32(11),
+                TileClass:       reader.GetString(12)));
         }
         return list;
     }

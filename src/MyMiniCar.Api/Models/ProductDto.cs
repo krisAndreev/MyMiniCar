@@ -6,6 +6,8 @@ public sealed record ProductDto(
     string Id,
     string Name,
     string Description,
+    string? NameBg,
+    string? DescriptionBg,
     decimal Price,
     string ImageUrl,
     string Category,
