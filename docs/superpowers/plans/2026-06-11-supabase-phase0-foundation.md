@@ -279,7 +279,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Create: `supabase/migrations/0003_profiles_trigger.sql`
 
-- [ ] **Step 1: Write trigger SQL**
+- [x] **Step 1: Write trigger SQL**
 
 ```sql
 -- 0003_profiles_trigger.sql — auto-create a profile row on signup
@@ -305,9 +305,9 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 ```
 
-- [ ] **Step 2: Verify** — eyeball: function `security definer`, trigger `after insert on auth.users`.
+- [x] **Step 2: Verify** — eyeball: function `security definer`, trigger `after insert on auth.users`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add supabase/migrations/0003_profiles_trigger.sql
