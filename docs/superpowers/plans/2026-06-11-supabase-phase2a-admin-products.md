@@ -527,7 +527,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none.
 
-- [ ] **Step 1: Make a verified admin + a normal user, test the gate**
+- [x] **Step 1: Make a verified admin + a normal user, test the gate**
 
 ```bash
 cd src/MyMiniCar.Api
@@ -551,7 +551,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: normal `403`, admin `200`, list count `8`.
 
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 2: Commit plan complete**
 
 Tick all boxes, commit the plan file.
 
