@@ -321,7 +321,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `src/MyMiniCar.Web/_Imports.razor`
 - Modify: `src/MyMiniCar.Web/App.razor`
 
-- [ ] **Step 1: Create the state provider**
+- [x] **Step 1: Create the state provider**
 
 `src/MyMiniCar.Web/Auth/SupabaseAuthStateProvider.cs`:
 ```csharp
@@ -362,7 +362,7 @@ public sealed class SupabaseAuthStateProvider : AuthenticationStateProvider
 }
 ```
 
-- [ ] **Step 2: Add the JWT package for token parsing**
+- [x] **Step 2: Add the JWT package for token parsing**
 
 Run:
 ```bash
@@ -371,7 +371,7 @@ dotnet add package System.IdentityModel.Tokens.Jwt --version 7.1.2
 ```
 Expected: package added; restore succeeds.
 
-- [ ] **Step 3: Wire DI in Program.cs**
+- [x] **Step 3: Wire DI in Program.cs**
 
 In `src/MyMiniCar.Web/Program.cs`, add usings at the top:
 ```csharp
@@ -392,7 +392,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(
 builder.Services.AddAuthorizationCore();
 ```
 
-- [ ] **Step 4: Add usings to _Imports.razor**
+- [x] **Step 4: Add usings to _Imports.razor**
 
 Append to `src/MyMiniCar.Web/_Imports.razor`:
 ```razor
@@ -400,7 +400,7 @@ Append to `src/MyMiniCar.Web/_Imports.razor`:
 @using Microsoft.AspNetCore.Authorization
 ```
 
-- [ ] **Step 5: Wrap the router in App.razor**
+- [x] **Step 5: Wrap the router in App.razor**
 
 Replace the contents of `src/MyMiniCar.Web/App.razor` with (preserving the existing `AppAssembly`/layout references):
 ```razor
@@ -421,12 +421,12 @@ Replace the contents of `src/MyMiniCar.Web/App.razor` with (preserving the exist
 ```
 NOTE: if the current `App.razor` references a different default layout than `MainLayout`, keep that one.
 
-- [ ] **Step 6: Build**
+- [x] **Step 6: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Auth/SupabaseAuthStateProvider.cs src/MyMiniCar.Web/MyMiniCar.Web.csproj src/MyMiniCar.Web/Program.cs src/MyMiniCar.Web/_Imports.razor src/MyMiniCar.Web/App.razor

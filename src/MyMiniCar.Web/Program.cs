@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MyMiniCar.Web;
+using MyMiniCar.Web.Auth;
 using MyMiniCar.Web.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -19,6 +21,18 @@ builder.Services.AddSingleton<LanguageService>();
 
 builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
 builder.Services.AddSingleton(_ => new ShippingService(apiBaseUrl));
+
+// Auth (Supabase)
+var supabaseUrl = builder.Configuration["Supabase:Url"] ?? "";
+var supabaseAnon = builder.Configuration["Supabase:AnonKey"] ?? "";
+
+builder.Services.AddScoped<TokenStore>();
+builder.Services.AddScoped(sp => new SupabaseAuthService(
+    supabaseUrl, supabaseAnon, sp.GetRequiredService<TokenStore>()));
+builder.Services.AddScoped<SupabaseAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(
+    sp => sp.GetRequiredService<SupabaseAuthStateProvider>());
+builder.Services.AddAuthorizationCore();
 
 var host = builder.Build();
 
