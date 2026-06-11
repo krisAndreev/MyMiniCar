@@ -53,6 +53,9 @@
             <AuthorizeView>
                 <Authorized>
                     <a href="account" class="nav-link nav-link-mmc d-none d-sm-inline" @onclick="CloseNavMenu">@Language.T("My orders")</a>
+                    <AuthorizeView Roles="admin" Context="adminCtx">
+                        <a href="admin/products" class="nav-link nav-link-mmc d-none d-sm-inline" @onclick="CloseNavMenu">Admin</a>
+                    </AuthorizeView>
                     <span class="nav-user d-none d-sm-inline">@context.User.FindFirst("email")?.Value</span>
                     <button class="icon-btn" @onclick="Logout" aria-label='@Language.T("Log out")' title='@Language.T("Log out")'>
                         <i class="bi bi-box-arrow-right"></i>

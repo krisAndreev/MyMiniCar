@@ -314,7 +314,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Pages/Admin/Products.razor`
 - Modify: `src/MyMiniCar.Web/Shared/NavMenu.razor`
 
-- [ ] **Step 1: Create the admin product service**
+- [x] **Step 1: Create the admin product service**
 
 `src/MyMiniCar.Web/Services/AdminProductService.cs`:
 ```csharp
@@ -389,14 +389,14 @@ public sealed class AdminProduct
 }
 ```
 
-- [ ] **Step 2: Register the service**
+- [x] **Step 2: Register the service**
 
 In `src/MyMiniCar.Web/Program.cs`, next to `DesignsService`:
 ```csharp
 builder.Services.AddScoped(sp => new AdminProductService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 ```
 
-- [ ] **Step 3: Create the admin page**
+- [x] **Step 3: Create the admin page**
 
 `src/MyMiniCar.Web/Pages/Admin/Products.razor`:
 ```razor
@@ -497,7 +497,7 @@ builder.Services.AddScoped(sp => new AdminProductService(apiBaseUrl, sp.GetRequi
 }
 ```
 
-- [ ] **Step 4: Add an admin nav link (admins only)**
+- [x] **Step 4: Add an admin nav link (admins only)**
 
 In `src/MyMiniCar.Web/Shared/NavMenu.razor`, inside the `<Authorized>` block (after "My orders"):
 ```razor
@@ -507,12 +507,12 @@ In `src/MyMiniCar.Web/Shared/NavMenu.razor`, inside the `<Authorized>` block (af
 ```
 NOTE: the outer `<AuthorizeView>` already uses `context`; the nested one needs its own `Context="adminCtx"` to avoid a name clash.
 
-- [ ] **Step 5: Build**
+- [x] **Step 5: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/AdminProductService.cs src/MyMiniCar.Web/Program.cs src/MyMiniCar.Web/Pages/Admin/Products.razor src/MyMiniCar.Web/Shared/NavMenu.razor

@@ -1,0 +1,95 @@
+@page "/admin/products"
+@attribute [Authorize(Roles = "admin")]
+@using MyMiniCar.Web.Services
+@inject AdminProductService Admin
+
+<PageTitle>Admin · Products</PageTitle>
+<div class="admin-page container py-5">
+    <h1>Products</h1>
+
+    @if (_products is null)
+    {
+        <p>Loading…</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead><tr><th>Id</th><th>Name</th><th>Price</th><th>Active</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var p in _products)
+                {
+                    <tr>
+                        <td>@p.Id</td>
+                        <td>@p.Name</td>
+                        <td>@p.Price.ToString("0.00")</td>
+                        <td>@(p.IsActive ? "✓" : "—")</td>
+                        <td>
+                            <button class="btn-outline-c btn-sm-c" @onclick="() => Edit(p)">Edit</button>
+                            <button class="btn-outline-c btn-sm-c" @onclick="() => Toggle(p)">@(p.IsActive ? "Disable" : "Enable")</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h2 class="mt-4">@(_editing.Id == "" ? "New product" : $"Edit {_editing.Id}")</h2>
+        <div class="admin-form">
+            <input placeholder="id (slug)" @bind="_editing.Id" />
+            <input placeholder="Name (EN)" @bind="_editing.Name" />
+            <input placeholder="Name (BG)" @bind="_editing.NameBg" />
+            <textarea placeholder="Description (EN)" @bind="_editing.Description"></textarea>
+            <textarea placeholder="Description (BG)" @bind="_editing.DescriptionBg"></textarea>
+            <input type="number" step="0.01" placeholder="Price" @bind="_editing.Price" />
+            <input placeholder="Category" @bind="_editing.Category" />
+            <input placeholder="Image URL" @bind="_editing.ImageUrl" />
+            <input placeholder="Dimensions" @bind="_editing.Dimensions" />
+            <input placeholder="Default material" @bind="_editing.DefaultMaterial" />
+            <input placeholder="Tile class" @bind="_editing.TileClass" />
+            <input type="number" placeholder="Weight (g)" @bind="_editing.WeightGrams" />
+            <input type="number" placeholder="Sort order" @bind="_editing.SortOrder" />
+            <label><input type="checkbox" @bind="_editing.IsFeatured" /> Featured</label>
+            <label><input type="checkbox" @bind="_editing.IsActive" /> Active</label>
+            <div class="d-flex gap-2">
+                <button class="btn-accent-c" @onclick="Save" disabled="@_saving">Save</button>
+                <button class="btn-outline-c" @onclick="NewProduct">New</button>
+            </div>
+            @if (_message is not null) { <p>@_message</p> }
+        </div>
+    }
+</div>
+
+@code {
+    private List<AdminProduct>? _products;
+    private AdminProduct _editing = new();
+    private bool _saving;
+    private string? _message;
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load() => _products = await Admin.GetAllAsync();
+
+    private void Edit(AdminProduct p) => _editing = new AdminProduct
+    {
+        Id = p.Id, Name = p.Name, NameBg = p.NameBg, Description = p.Description,
+        DescriptionBg = p.DescriptionBg, Price = p.Price, Category = p.Category,
+        ImageUrl = p.ImageUrl, DisplayModelUrl = p.DisplayModelUrl, PrintModelUrl = p.PrintModelUrl,
+        DefaultMaterial = p.DefaultMaterial, Dimensions = p.Dimensions, WeightGrams = p.WeightGrams,
+        TileClass = p.TileClass, IsFeatured = p.IsFeatured, IsActive = p.IsActive, SortOrder = p.SortOrder
+    };
+
+    private void NewProduct() => _editing = new AdminProduct();
+
+    private async Task Save()
+    {
+        _saving = true; _message = null;
+        var ok = await Admin.SaveAsync(_editing);
+        _message = ok ? "Saved." : "Save failed.";
+        if (ok) { await Load(); NewProduct(); }
+        _saving = false;
+    }
+
+    private async Task Toggle(AdminProduct p)
+    {
+        if (await Admin.SetActiveAsync(p.Id, !p.IsActive)) await Load();
+    }
+}
