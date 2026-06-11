@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using MyMiniCar.Api;
 using MyMiniCar.Api.Data;
+using MyMiniCar.Api.Models;
 using Stripe;
 using Stripe.Checkout;
 
@@ -39,6 +40,7 @@ builder.Services.AddHttpClient<EcontService>((sp, http) =>
 
 builder.Services.AddSingleton<SupabaseDataSource>();
 builder.Services.AddScoped<ProductRepository>();
+builder.Services.AddScoped<OrderRepository>();
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
@@ -121,7 +123,8 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
             ["shipping_city"] = req.City ?? string.Empty,
             ["shipping_postal"] = req.PostalCode ?? string.Empty,
             ["shipping_country"] = req.Country ?? string.Empty,
-            ["weight_kg"] = req.WeightKg.ToString(CultureInfo.InvariantCulture)
+            ["weight_kg"] = req.WeightKg.ToString(CultureInfo.InvariantCulture),
+            ["shipping_amount"] = req.ShippingAmount.ToString(CultureInfo.InvariantCulture)
         }
     };
 
@@ -134,6 +137,85 @@ app.MapPost("/api/checkout/create-session", (CreateCheckoutRequest req) =>
     {
         return Results.Problem($"Stripe error: {ex.StripeError?.Message ?? ex.Message}");
     }
+});
+
+// Stripe → order persistence. Stripe calls this on checkout.session.completed.
+app.MapPost("/api/stripe/webhook", async (HttpRequest request, OrderRepository orders, IConfiguration cfg) =>
+{
+    var secret = cfg["Stripe:WebhookSecret"];
+    if (string.IsNullOrWhiteSpace(secret))
+        return Results.Problem("Stripe:WebhookSecret not configured.");
+
+    var json = await new StreamReader(request.Body).ReadToEndAsync();
+
+    Event stripeEvent;
+    try
+    {
+        stripeEvent = EventUtility.ConstructEvent(
+            json, request.Headers["Stripe-Signature"], secret);
+    }
+    catch (StripeException)
+    {
+        return Results.BadRequest(new { error = "Invalid signature." });
+    }
+
+    if (stripeEvent.Type != "checkout.session.completed")
+        return Results.Ok();   // ignore other events
+
+    if (stripeEvent.Data.Object is not Session session ||
+        !string.Equals(session.PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase))
+        return Results.Ok();
+
+    // Shipping line items are added by create-session with these exact names.
+    var shippingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "Доставка до офис на Еконт",
+        "Доставка до адрес (Еконт)"
+    };
+
+    var lineItems = new SessionLineItemService().List(session.Id);
+    var items = lineItems.Data
+        .Where(li => li.Description is null || !shippingNames.Contains(li.Description))
+        .Select(li =>
+        {
+            var qty = (int)(li.Quantity ?? 1);
+            var unit = li.Price?.UnitAmount is long c ? c / 100m
+                     : qty > 0 ? (li.AmountTotal / 100m) / qty : 0m;
+            return new OrderLineInput(li.Description ?? "Item", unit, qty);
+        })
+        .ToList();
+
+    var m = session.Metadata ?? new Dictionary<string, string>();
+    decimal.TryParse(m.GetValueOrDefault("shipping_amount"),
+        NumberStyles.Float, CultureInfo.InvariantCulture, out var shipping);
+    var total = (session.AmountTotal ?? 0) / 100m;
+
+    var shippingJson = System.Text.Json.JsonSerializer.Serialize(new
+    {
+        address = m.GetValueOrDefault("shipping_address"),
+        city = m.GetValueOrDefault("shipping_city"),
+        postal = m.GetValueOrDefault("shipping_postal"),
+        country = m.GetValueOrDefault("shipping_country"),
+        office_code = m.GetValueOrDefault("office_code"),
+        weight_kg = m.GetValueOrDefault("weight_kg")
+    });
+
+    var input = new PaidOrderInput(
+        StripeSessionId: session.Id,
+        Email: session.CustomerDetails?.Email ?? session.CustomerEmail,
+        CustomerName: m.GetValueOrDefault("customer_name"),
+        CustomerPhone: m.GetValueOrDefault("customer_phone"),
+        Subtotal: total - shipping,
+        ShippingAmount: shipping,
+        Total: total,
+        Currency: session.Currency ?? "eur",
+        Carrier: "econt",
+        ShippingMethod: m.GetValueOrDefault("delivery_mode"),
+        ShippingJson: shippingJson,
+        Items: items);
+
+    await orders.PersistPaidAsync(input);
+    return Results.Ok();
 });
 
 // Looks up a session so the confirmation page can verify the payment really succeeded.

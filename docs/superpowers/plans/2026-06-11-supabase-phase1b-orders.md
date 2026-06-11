@@ -165,7 +165,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Add `shipping_amount` to checkout metadata**
+- [x] **Step 1: Add `shipping_amount` to checkout metadata**
 
 In `src/MyMiniCar.Api/Program.cs`, in the `Metadata` dictionary of the create-session options, add one line after `["weight_kg"]`:
 ```csharp
@@ -174,14 +174,14 @@ In `src/MyMiniCar.Api/Program.cs`, in the `Metadata` dictionary of the create-se
 ```
 (Add the trailing comma to the existing `weight_kg` line as shown.)
 
-- [ ] **Step 2: Register the repository**
+- [x] **Step 2: Register the repository**
 
 Next to `builder.Services.AddScoped<ProductRepository>();` add:
 ```csharp
 builder.Services.AddScoped<OrderRepository>();
 ```
 
-- [ ] **Step 3: Add the webhook endpoint**
+- [x] **Step 3: Add the webhook endpoint**
 
 In `src/MyMiniCar.Api/Program.cs`, add this just after the create-session endpoint (after its closing `});`). It needs `using MyMiniCar.Api.Models;` — add that to the usings at the top of the file:
 ```csharp
@@ -265,12 +265,12 @@ app.MapPost("/api/stripe/webhook", async (HttpRequest request, OrderRepository o
 });
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `cd src/MyMiniCar.Api && dotnet build`
 Expected: Build succeeded, 0 errors. (If `Session`/`Event`/`EventUtility` are ambiguous, they come from `Stripe` / `Stripe.Checkout`, both already imported at the top of the file.)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Program.cs
