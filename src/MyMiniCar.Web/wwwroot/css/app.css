@@ -2111,3 +2111,311 @@ a:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ============================================================
+   ACCOUNTS · ADMIN  (auth, account, admin console)
+   Built on the site tokens — matches Studio / checkout surfaces.
+   ============================================================ */
+
+/* ---- Outline button (used across account + admin) ---- */
+.btn-outline-c {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1.5px solid var(--line-strong);
+    cursor: pointer;
+    transition: var(--t);
+    line-height: 1;
+    text-decoration: none;
+}
+.btn-outline-c:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+/* ---- Auth (login / register) ---- */
+.auth-wrap {
+    max-width: 26rem;
+    margin: clamp(2.5rem, 9vh, 6rem) auto;
+    padding: 0 1.25rem;
+}
+.auth-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    box-shadow: var(--shadow);
+}
+.auth-card h1 {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    margin: 0.5rem 0 1.4rem;
+}
+.auth-card input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.78rem 0.95rem;
+    margin-bottom: 0.85rem;
+    transition: var(--t);
+}
+.auth-card input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+.auth-card .auth-error {
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin: 0.4rem 0 0;
+}
+.auth-card p {
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    margin: 1.1rem 0 0;
+}
+.auth-card a { color: var(--primary); font-weight: 600; }
+
+/* ---- Account (order history + saved designs) ---- */
+.account-page {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vh, 3.5rem) 1.25rem;
+}
+.account-page h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin-bottom: 1.25rem;
+}
+.account-page h2 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    margin: 2rem 0 1rem;
+}
+.order-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--shadow-sm);
+}
+.order-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.order-date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+}
+.order-status {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    background: var(--primary-tint);
+    color: var(--primary);
+}
+.order-total {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+.order-items {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0.7rem 0 0;
+    border-top: 1px dashed var(--line);
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    display: grid;
+    gap: 0.25rem;
+}
+.design-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.85rem;
+}
+.design-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-sm);
+}
+.design-name { font-weight: 600; flex: 1 1 100%; }
+.design-date {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    flex: 1;
+}
+
+/* ---- Admin console ---- */
+.admin-page {
+    max-width: 74rem;
+    margin: 0 auto;
+}
+.admin-page h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin-bottom: 1.25rem;
+}
+.admin-page h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 1.75rem 0 0.9rem;
+}
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
+}
+.admin-table thead th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--surface-alt);
+    padding: 0.7rem 0.9rem;
+}
+.admin-table td {
+    padding: 0.7rem 0.9rem;
+    border-top: 1px solid var(--line);
+    vertical-align: middle;
+}
+.admin-table tbody tr:hover { background: var(--surface-alt); }
+.admin-table select {
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+}
+.admin-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    margin-top: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+.admin-form input,
+.admin-form textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    transition: var(--t);
+}
+.admin-form input:focus,
+.admin-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+.admin-form textarea {
+    grid-column: 1 / -1;
+    min-height: 4.5rem;
+    resize: vertical;
+}
+.admin-form label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+}
+.admin-form > .d-flex { grid-column: 1 / -1; }
+.admin-form > p { grid-column: 1 / -1; color: var(--ink-soft); font-size: 0.86rem; }
+
+/* ---- Analytics dashboard ---- */
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    box-shadow: var(--shadow-sm);
+}
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--primary);
+}
+.stat-card:nth-child(2)::after { background: var(--accent); }
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 1.95rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ---- Nav user chip ---- */
+.nav-user {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    align-self: center;
+}

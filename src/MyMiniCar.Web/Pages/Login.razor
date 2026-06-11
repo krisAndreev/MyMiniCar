@@ -3,15 +3,21 @@
 @inject SupabaseAuthService Auth
 @inject SupabaseAuthStateProvider AuthState
 @inject NavigationManager Nav
+@inject LanguageService Language
 
 <PageTitle>Log in</PageTitle>
-<div class="auth-card">
-    <h1>Log in</h1>
-    <input type="email" placeholder="Email" @bind="_email" />
-    <input type="password" placeholder="Password" @bind="_password" />
-    <button disabled="@_busy" @onclick="DoLogin">@(_busy ? "..." : "Log in")</button>
-    @if (_error is not null) { <p class="auth-error">@_error</p> }
-    <p>No account? <a href="/register">Register</a></p>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <span class="eyebrow">@Language.T("Welcome back")</span>
+        <h1>@Language.T("Log in")</h1>
+        <input type="email" placeholder="@Language.T("Email")" @bind="_email" />
+        <input type="password" placeholder="@Language.T("Password")" @bind="_password" />
+        <button class="btn-primary-c btn-block" disabled="@_busy" @onclick="DoLogin">
+            @(_busy ? "…" : Language.T("Log in"))
+        </button>
+        @if (_error is not null) { <p class="auth-error">@_error</p> }
+        <p>@Language.T("No account?") <a href="/register">@Language.T("Register")</a></p>
+    </div>
 </div>
 
 @code {
