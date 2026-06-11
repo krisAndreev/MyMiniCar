@@ -312,7 +312,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none.
 
-- [ ] **Step 1: Admin lists orders + updates a status**
+- [x] **Step 1: Admin lists orders + updates a status**
 
 Use the admin account (`mymincar.admin@gmail.com` / `MmcAdmin2026!`):
 ```bash
@@ -329,7 +329,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: list `count>=1`; set shipped `204`; verify `first status= shipped`; bad status `400`.
 
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 2: Commit plan complete**
 
 Tick all boxes, commit the plan file.
 
