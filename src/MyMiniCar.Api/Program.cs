@@ -16,6 +16,8 @@ builder.Services.AddCors(options => options.AddPolicy(CorsPolicy, policy =>
           .AllowAnyHeader()
           .AllowAnyMethod()));
 
+builder.Services.AddResponseCompression(o => o.EnableForHttps = true);
+
 // TODO #REFACTOR - switch Econt demo creds/URL to the live contract before go-live
 builder.Services.AddHttpClient<EcontService>((sp, http) =>
 {
@@ -35,7 +37,18 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]
     ?? throw new InvalidOperationException(
         "Stripe:SecretKey is not configured. Run: dotnet user-secrets set \"Stripe:SecretKey\" \"sk_test_...\"");
 
+app.UseResponseCompression();
 app.UseCors(CorsPolicy);
+
+_ = Task.Run(async () =>
+{
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        await scope.ServiceProvider.GetRequiredService<EcontService>().GetCitiesAsync();
+    }
+    catch { }
+});
 
 const string Currency = "eur";
 

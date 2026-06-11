@@ -21,10 +21,17 @@ public class EcontService
     private static readonly StringComparer BgComparer =
         StringComparer.Create(CultureInfo.GetCultureInfo("bg-BG"), ignoreCase: true);
 
-    // TODO #REFACTOR - shared/TTL cache for multi-instance
+    // TODO #REFACTOR - shared/distributed cache for multi-instance
     private static List<CityDto>? _citiesCache;
     private static Dictionary<int, List<OfficeDto>>? _officesByCity;
     private static readonly SemaphoreSlim NomenclatureLock = new(1, 1);
+
+    // getCities is ~18 MB / ~50s from Econt, so the processed result is cached to disk
+    // and reused across restarts (refetched only when older than the TTL).
+    private static readonly string CacheFile = Path.Combine(Path.GetTempPath(), "mymincar-econt-nomenclature.json");
+    private static readonly TimeSpan CacheTtl = TimeSpan.FromDays(7);
+
+    private record NomenclatureCache(DateTimeOffset SavedAt, List<CityDto> Cities, Dictionary<int, List<OfficeDto>> OfficesByCity);
 
     private readonly HttpClient _http;
     private readonly EcontSenderOptions _sender;
@@ -91,8 +98,13 @@ public class EcontService
         try
         {
             if (_citiesCache is not null && _officesByCity is not null) return;
+            if (TryLoadFromDisk()) return;
 
-            var officesResp = await PostAsync<EcontOfficesResponse>(OfficesPath, new EcontGetOfficesRequest());
+            var officesTask = PostAsync<EcontOfficesResponse>(OfficesPath, new EcontGetOfficesRequest());
+            var citiesTask = PostAsync<EcontCitiesResponse>(CitiesPath, new EcontGetCitiesRequest());
+            await Task.WhenAll(officesTask, citiesTask);
+
+            var officesResp = officesTask.Result;
             var byCity = new Dictionary<int, List<OfficeDto>>();
             foreach (var o in officesResp?.Offices ?? new List<EcontOfficeWire>())
             {
@@ -112,8 +124,8 @@ public class EcontService
             foreach (var list in byCity.Values)
                 list.Sort((a, b) => BgComparer.Compare(a.Name, b.Name));
 
-            var citiesResp = await PostAsync<EcontCitiesResponse>(CitiesPath, new EcontGetCitiesRequest());
-            _citiesCache = (citiesResp?.Cities ?? new List<EcontCity>())
+            var citiesResp = citiesTask.Result;
+            var cities = (citiesResp?.Cities ?? new List<EcontCity>())
                 .Where(c => !string.IsNullOrEmpty(c.Name))
                 .Where(c => c.PostCode is { Length: 4 } pc && pc.All(char.IsDigit))
                 .Select(c => new CityDto(
@@ -126,11 +138,44 @@ public class EcontService
                 .OrderBy(c => c.Name, BgComparer)
                 .ToList();
 
+            _citiesCache = cities;
             _officesByCity = byCity;
+            SaveToDisk(cities, byCity);
         }
         finally
         {
             NomenclatureLock.Release();
+        }
+    }
+
+    private static bool TryLoadFromDisk()
+    {
+        try
+        {
+            if (!File.Exists(CacheFile)) return false;
+
+            var cached = JsonSerializer.Deserialize<NomenclatureCache>(File.ReadAllText(CacheFile), Json);
+            if (cached is null || cached.Cities.Count == 0) return false;
+            if (DateTimeOffset.UtcNow - cached.SavedAt > CacheTtl) return false;
+
+            _citiesCache = cached.Cities;
+            _officesByCity = cached.OfficesByCity;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static void SaveToDisk(List<CityDto> cities, Dictionary<int, List<OfficeDto>> officesByCity)
+    {
+        try
+        {
+            File.WriteAllText(CacheFile, JsonSerializer.Serialize(new NomenclatureCache(DateTimeOffset.UtcNow, cities, officesByCity), Json));
+        }
+        catch
+        {
         }
     }
 

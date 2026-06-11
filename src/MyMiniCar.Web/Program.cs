@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using MyMiniCar.Web;
 using MyMiniCar.Web.Services;
 
@@ -15,6 +16,10 @@ builder.Services.AddSingleton<CartService>();
 
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5230";
 builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
-builder.Services.AddScoped(_ => new ShippingService(apiBaseUrl));
+builder.Services.AddSingleton(_ => new ShippingService(apiBaseUrl));
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+_ = host.Services.GetRequiredService<ShippingService>().GetCitiesAsync();
+
+await host.RunAsync();

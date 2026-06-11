@@ -5,6 +5,7 @@ namespace MyMiniCar.Web.Services;
 public class ShippingService
 {
     private readonly HttpClient _http;
+    private Task<List<EcontCity>>? _citiesTask;
 
     public ShippingService(string apiBaseUrl)
     {
@@ -27,16 +28,19 @@ public class ShippingService
         }
     }
 
-    public async Task<List<EcontCity>> GetCitiesAsync()
+    public Task<List<EcontCity>> GetCitiesAsync() => _citiesTask ??= LoadCitiesAsync();
+
+    private async Task<List<EcontCity>> LoadCitiesAsync()
     {
         try
         {
-            return await _http.GetFromJsonAsync<List<EcontCity>>("/api/shipping/cities") ?? new List<EcontCity>();
+            var cities = await _http.GetFromJsonAsync<List<EcontCity>>("/api/shipping/cities");
+            if (cities is { Count: > 0 }) return cities;
         }
-        catch (HttpRequestException)
-        {
-            return new List<EcontCity>();
-        }
+        catch (HttpRequestException) { }
+
+        _citiesTask = null;
+        return new List<EcontCity>();
     }
 
     public async Task<List<EcontOffice>> GetOfficesAsync(int cityId)
