@@ -33,7 +33,7 @@
 - Create: `src/MyMiniCar.Api/Data/DesignRepository.cs`
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Create the models**
+- [x] **Step 1: Create the models**
 
 `src/MyMiniCar.Api/Models/DesignModels.cs`:
 ```csharp
@@ -46,7 +46,7 @@ public sealed record DesignCreate(string? Name, string ConfigJson);
 public sealed record DesignView(Guid Id, string? Name, string Config, DateTime CreatedAt);
 ```
 
-- [ ] **Step 2: Create the repository**
+- [x] **Step 2: Create the repository**
 
 `src/MyMiniCar.Api/Data/DesignRepository.cs`:
 ```csharp
@@ -104,7 +104,7 @@ public sealed class DesignRepository
 }
 ```
 
-- [ ] **Step 3: Register repo + endpoints in Program.cs**
+- [x] **Step 3: Register repo + endpoints in Program.cs**
 
 Next to the other repo registrations add:
 ```csharp
@@ -136,7 +136,7 @@ app.MapDelete("/api/designs/{id:guid}", async (Guid id, ClaimsPrincipal user, De
 }).RequireAuthorization();
 ```
 
-- [ ] **Step 4: Build + smoke (auth required)**
+- [x] **Step 4: Build + smoke (auth required)**
 
 Run:
 ```bash
@@ -147,7 +147,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: 0 build errors; `designs-anon=401`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/DesignModels.cs src/MyMiniCar.Api/Data/DesignRepository.cs src/MyMiniCar.Api/Program.cs

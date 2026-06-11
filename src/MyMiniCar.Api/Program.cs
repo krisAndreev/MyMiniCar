@@ -45,6 +45,7 @@ builder.Services.AddSingleton<SupabaseDataSource>();
 builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<ProfileRepository>();
+builder.Services.AddScoped<DesignRepository>();
 
 var supabaseUrl = builder.Configuration["Supabase:Url"]
     ?? throw new InvalidOperationException("Supabase:Url not configured.");
@@ -389,6 +390,29 @@ app.MapGet("/api/orders/mine", async (ClaimsPrincipal user, OrderRepository orde
     if (sub is null || !Guid.TryParse(sub, out var userId))
         return Results.Unauthorized();
     return Results.Ok(await orders.GetByUserAsync(userId));
+}).RequireAuthorization();
+
+app.MapGet("/api/designs/mine", async (ClaimsPrincipal user, DesignRepository designs) =>
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId)) return Results.Unauthorized();
+    return Results.Ok(await designs.GetByUserAsync(userId));
+}).RequireAuthorization();
+
+app.MapPost("/api/designs", async (DesignCreate body, ClaimsPrincipal user, DesignRepository designs) =>
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId)) return Results.Unauthorized();
+    if (string.IsNullOrWhiteSpace(body.ConfigJson)) return Results.BadRequest(new { error = "Empty config." });
+    var id = await designs.CreateAsync(userId, body);
+    return Results.Ok(new { id });
+}).RequireAuthorization();
+
+app.MapDelete("/api/designs/{id:guid}", async (Guid id, ClaimsPrincipal user, DesignRepository designs) =>
+{
+    var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+    if (sub is null || !Guid.TryParse(sub, out var userId)) return Results.Unauthorized();
+    return await designs.DeleteAsync(userId, id) ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization();
 
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.
