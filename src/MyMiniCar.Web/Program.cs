@@ -31,7 +31,8 @@ var supabaseAnon = builder.Configuration["Supabase:AnonKey"] ?? "";
 builder.Services.AddScoped<TokenStore>();
 builder.Services.AddScoped(sp => new SupabaseAuthService(
     supabaseUrl, supabaseAnon, sp.GetRequiredService<TokenStore>()));
-builder.Services.AddScoped<SupabaseAuthStateProvider>();
+builder.Services.AddScoped<SupabaseAuthStateProvider>(
+    sp => new SupabaseAuthStateProvider(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 builder.Services.AddScoped<AuthenticationStateProvider>(
     sp => sp.GetRequiredService<SupabaseAuthStateProvider>());
 builder.Services.AddAuthorizationCore();

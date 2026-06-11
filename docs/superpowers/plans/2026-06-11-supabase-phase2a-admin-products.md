@@ -205,7 +205,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `src/MyMiniCar.Web/Auth/SupabaseAuthStateProvider.cs`
 - Modify: `src/MyMiniCar.Web/Program.cs`
 
-- [ ] **Step 1: Fetch the app role and add it as a role claim**
+- [x] **Step 1: Fetch the app role and add it as a role claim**
 
 Replace `src/MyMiniCar.Web/Auth/SupabaseAuthStateProvider.cs` with:
 ```csharp
@@ -281,7 +281,7 @@ public sealed class SupabaseAuthStateProvider : AuthenticationStateProvider
 }
 ```
 
-- [ ] **Step 2: Pass the api base url in DI**
+- [x] **Step 2: Pass the api base url in DI**
 
 In `src/MyMiniCar.Web/Program.cs`, update the provider registration to pass `apiBaseUrl`:
 ```csharp
@@ -290,12 +290,12 @@ builder.Services.AddScoped<SupabaseAuthStateProvider>(
 ```
 (Leave the `AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<SupabaseAuthStateProvider>())` line as-is.)
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Auth/SupabaseAuthStateProvider.cs src/MyMiniCar.Web/Program.cs
