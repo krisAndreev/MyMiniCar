@@ -316,7 +316,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none.
 
-- [ ] **Step 1: Admin fetches analytics**
+- [x] **Step 1: Admin fetches analytics**
 
 ```bash
 cd src/MyMiniCar.Api
@@ -329,7 +329,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: a JSON summary with `totalRevenue`, `orderCount`, `statusCounts`, `topProducts` (reflecting the existing test order — 1 order, revenue 30, top product the Stripe fixture item).
 
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 2: Commit plan complete**
 
 Tick all boxes, commit the plan file.
 
