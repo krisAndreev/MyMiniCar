@@ -33,7 +33,7 @@ Note: `MockProductService` is kept in the repo (not deleted) as a fallback/refer
 - Create: `src/MyMiniCar.Api/Models/ProductDto.cs`
 - Create: `src/MyMiniCar.Api/Data/ProductRepository.cs`
 
-- [ ] **Step 1: Create the DTO**
+- [x] **Step 1: Create the DTO**
 
 `src/MyMiniCar.Api/Models/ProductDto.cs`:
 ```csharp
@@ -55,7 +55,7 @@ public sealed record ProductDto(
     string TileClass);
 ```
 
-- [ ] **Step 2: Create the repository**
+- [x] **Step 2: Create the repository**
 
 `src/MyMiniCar.Api/Data/ProductRepository.cs`:
 ```csharp
@@ -119,12 +119,12 @@ public sealed class ProductRepository
 }
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Api && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/ProductDto.cs src/MyMiniCar.Api/Data/ProductRepository.cs
