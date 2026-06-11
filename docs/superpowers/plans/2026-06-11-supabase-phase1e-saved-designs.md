@@ -164,7 +164,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Services/DesignsService.cs`
 - Modify: `src/MyMiniCar.Web/Program.cs`
 
-- [ ] **Step 1: Create the service + DTOs**
+- [x] **Step 1: Create the service + DTOs**
 
 `src/MyMiniCar.Web/Services/DesignsService.cs`:
 ```csharp
@@ -224,19 +224,19 @@ public sealed class DesignsService
 public sealed record DesignView(Guid Id, string? Name, string Config, DateTime CreatedAt);
 ```
 
-- [ ] **Step 2: Register it in Program.cs**
+- [x] **Step 2: Register it in Program.cs**
 
 Next to the `OrdersService` registration:
 ```csharp
 builder.Services.AddScoped(sp => new DesignsService(apiBaseUrl, sp.GetRequiredService<TokenStore>()));
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/DesignsService.cs src/MyMiniCar.Web/Program.cs
