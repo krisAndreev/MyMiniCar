@@ -278,7 +278,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none (verification only)
 
-- [ ] **Step 1: Run Api + Web together**
+- [x] **Step 1: Run Api + Web together**
 
 Run:
 ```bash
@@ -289,7 +289,7 @@ curl -s http://localhost:5230/api/products | python3 -c "import sys,json;d=json.
 ```
 Expected: `api products= 8`.
 
-- [ ] **Step 2: Confirm CORS allows the WASM origin**
+- [x] **Step 2: Confirm CORS allows the WASM origin**
 
 Run:
 ```bash
@@ -298,7 +298,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: an `Access-Control-Allow-Origin` header echoing `http://localhost:5229` (CORS policy already configured in Program.cs for dev localhost).
 
-- [ ] **Step 3: Mark plan complete + commit**
+- [x] **Step 3: Mark plan complete + commit**
 
 Tick all boxes, then:
 ```bash
