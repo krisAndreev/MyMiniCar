@@ -33,7 +33,7 @@
 - Modify: `src/MyMiniCar.Api/Data/OrderRepository.cs`
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Add AdminOrderView to OrderModels.cs**
+- [x] **Step 1: Add AdminOrderView to OrderModels.cs**
 
 Append to `src/MyMiniCar.Api/Models/OrderModels.cs`:
 ```csharp
@@ -51,7 +51,7 @@ public sealed record AdminOrderView(
     IReadOnlyList<OrderItemView> Items);
 ```
 
-- [ ] **Step 2: Add GetAllAsync + UpdateStatusAsync to OrderRepository**
+- [x] **Step 2: Add GetAllAsync + UpdateStatusAsync to OrderRepository**
 
 Append to `OrderRepository` (after `GetByUserAsync`):
 ```csharp
@@ -108,7 +108,7 @@ Append to `OrderRepository` (after `GetByUserAsync`):
     }
 ```
 
-- [ ] **Step 3: Add endpoints to Program.cs**
+- [x] **Step 3: Add endpoints to Program.cs**
 
 Next to the admin product endpoints:
 ```csharp
@@ -127,7 +127,7 @@ app.MapPost("/api/admin/orders/{id:guid}/status", async (Guid id, string status,
 }).RequireAuthorization();
 ```
 
-- [ ] **Step 4: Build + smoke**
+- [x] **Step 4: Build + smoke**
 
 Run:
 ```bash
@@ -138,7 +138,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: 0 errors; `orders-anon=401`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/OrderModels.cs src/MyMiniCar.Api/Data/OrderRepository.cs src/MyMiniCar.Api/Program.cs

@@ -31,3 +31,16 @@ public sealed record OrderView(
     string Currency,
     DateTime CreatedAt,
     IReadOnlyList<OrderItemView> Items);
+
+/// <summary>An order with customer + shipping summary for the admin view.</summary>
+public sealed record AdminOrderView(
+    Guid Id,
+    string Status,
+    string? Email,
+    string? CustomerName,
+    decimal Total,
+    string Currency,
+    string? Carrier,
+    string? ShippingMethod,
+    DateTime CreatedAt,
+    IReadOnlyList<OrderItemView> Items);

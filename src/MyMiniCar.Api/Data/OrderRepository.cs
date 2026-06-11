@@ -94,4 +94,56 @@ public sealed class OrderRepository
         }
         return views;
     }
+
+    /// <summary>All orders (newest first) with line items, for the admin view.</summary>
+    public async Task<List<AdminOrderView>> GetAllAsync(CancellationToken ct = default)
+    {
+        var heads = new List<(Guid Id, string Status, string? Email, string? Name, decimal Total,
+                              string Currency, string? Carrier, string? Method, DateTime Created)>();
+        await using (var cmd = _db.DataSource.CreateCommand(@"
+            select id, status, email, customer_name, total, currency, carrier, shipping_method, created_at
+            from public.orders order by created_at desc"))
+        {
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                heads.Add((
+                    r.GetGuid(0), r.GetString(1),
+                    r.IsDBNull(2) ? null : r.GetString(2),
+                    r.IsDBNull(3) ? null : r.GetString(3),
+                    r.GetDecimal(4), r.GetString(5),
+                    r.IsDBNull(6) ? null : r.GetString(6),
+                    r.IsDBNull(7) ? null : r.GetString(7),
+                    r.GetDateTime(8)));
+        }
+
+        var views = new List<AdminOrderView>();
+        foreach (var h in heads)
+        {
+            var items = new List<OrderItemView>();
+            await using var icmd = _db.DataSource.CreateCommand(
+                "select name, unit_price, quantity from public.order_items where order_id = $1");
+            icmd.Parameters.AddWithValue(h.Id);
+            await using var ir = await icmd.ExecuteReaderAsync(ct);
+            while (await ir.ReadAsync(ct))
+                items.Add(new OrderItemView(ir.GetString(0), ir.GetDecimal(1), ir.GetInt32(2)));
+
+            views.Add(new AdminOrderView(h.Id, h.Status, h.Email, h.Name, h.Total, h.Currency,
+                                         h.Carrier, h.Method, h.Created, items));
+        }
+        return views;
+    }
+
+    private static readonly HashSet<string> AllowedStatuses = new(StringComparer.OrdinalIgnoreCase)
+        { "pending", "paid", "shipped", "delivered", "cancelled", "refunded" };
+
+    /// <summary>Updates an order's status. Returns false if the status is invalid or no row matched.</summary>
+    public async Task<bool> UpdateStatusAsync(Guid id, string status, CancellationToken ct = default)
+    {
+        if (!AllowedStatuses.Contains(status)) return false;
+        await using var cmd = _db.DataSource.CreateCommand(
+            "update public.orders set status = $2 where id = $1");
+        cmd.Parameters.AddWithValue(id);
+        cmd.Parameters.AddWithValue(status.ToLowerInvariant());
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
+    }
 }

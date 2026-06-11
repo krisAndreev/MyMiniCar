@@ -448,6 +448,20 @@ app.MapPost("/api/admin/products/{id}/active", async (string id, bool active, Cl
     return await products.SetActiveAsync(id, active) ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization();
 
+app.MapGet("/api/admin/orders", async (ClaimsPrincipal user, ProfileRepository profiles, OrderRepository orders) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    return Results.Ok(await orders.GetAllAsync());
+}).RequireAuthorization();
+
+app.MapPost("/api/admin/orders/{id:guid}/status", async (Guid id, string status, ClaimsPrincipal user, ProfileRepository profiles, OrderRepository orders) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    return await orders.UpdateStatusAsync(id, status) ? Results.NoContent() : Results.BadRequest(new { error = "Invalid status or order." });
+}).RequireAuthorization();
+
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.
 app.MapGet("/api/health/db", async (SupabaseDataSource db) =>
 {
