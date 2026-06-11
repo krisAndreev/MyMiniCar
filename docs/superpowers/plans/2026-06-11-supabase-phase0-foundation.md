@@ -49,7 +49,7 @@ These require your Supabase account; Claude cannot do them.
 **Files:**
 - Create: `supabase/migrations/0001_init.sql`
 
-- [ ] **Step 1: Write the schema SQL**
+- [x] **Step 1: Write the schema SQL**
 
 ```sql
 -- 0001_init.sql — MyMiniCar core schema
@@ -161,13 +161,13 @@ create index if not exists idx_designs_user        on public.designs(user_id);
 create index if not exists idx_products_active      on public.products(is_active);
 ```
 
-- [ ] **Step 2: Verify SQL parses**
+- [x] **Step 2: Verify SQL parses**
 
 Run (optional, if Supabase CLI + local Docker available):
 `supabase db reset` (applies migrations to a local shadow DB)
 Expected: no syntax errors. If no CLI, eyeball-review for balanced parens / valid types.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add supabase/migrations/0001_init.sql
