@@ -1,6 +1,9 @@
 @page "/convert"
+@using System.Text.Json
 @inject CartService CartService
 @inject LanguageService Language
+@inject DesignsService Designs
+@inject NavigationManager Nav
 @implements IDisposable
 
 <div class="container py-5 studio-page">
@@ -100,6 +103,13 @@
             {
                 <span class="studio-bar-added"><i class="bi bi-bag-check-fill"></i> @Language.T("It's yours — added!")</span>
             }
+            <AuthorizeView>
+                <Authorized>
+                    <button class="btn-outline-c" @onclick="SaveDesign" disabled="@_saving">
+                        <i class="bi bi-bookmark-plus"></i> @(_saved ? Language.T("Saved") : Language.T("Save design"))
+                    </button>
+                </Authorized>
+            </AuthorizeView>
             <span class="studio-bar-price">@_config.Price.ToString("C2")</span>
             <button class="btn-accent-c" @onclick="AddToBag">
                 <i class="bi bi-bag-plus"></i> @Language.T("Add to cart")
@@ -119,7 +129,54 @@
         "#16161a", "#f4f6f9", "#c81f0c", "#1741b8", "#9aa3b0", "#1d7a46", "#e0a020",
     };
 
+    [Parameter, SupplyParameterFromQuery(Name = "design")]
+    public string? DesignId { get; set; }
+
+    private bool _saving;
+    private bool _saved;
+
+    private sealed record SavedConfig(
+        string CarKey, string BodyColor, string SizeKey,
+        string MaterialName, string TemplateId, string Line1, string Line2);
+
     protected override void OnInitialized() => Language.OnChange += StateHasChanged;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Guid.TryParse(DesignId, out var id))
+        {
+            var mine = await Designs.GetMineAsync();
+            var match = mine?.FirstOrDefault(d => d.Id == id);
+            if (match is not null) ApplyConfig(match.Config);
+        }
+    }
+
+    private async Task SaveDesign()
+    {
+        _saving = true;
+        var cfg = new SavedConfig(
+            _car.Key, _bodyColor, _config.SizeKey,
+            _config.MaterialName, _config.TemplateId, _config.Line1, _config.Line2);
+        var name = $"{_car.Name} · {_config.Size.Name}";
+        _saved = await Designs.SaveAsync(name, JsonSerializer.Serialize(cfg));
+        _saving = false;
+    }
+
+    private void ApplyConfig(string json)
+    {
+        SavedConfig? cfg;
+        try { cfg = JsonSerializer.Deserialize<SavedConfig>(json); }
+        catch { return; }
+        if (cfg is null) return;
+
+        _car = CarCatalog.All.FirstOrDefault(c => c.Key == cfg.CarKey) ?? CarCatalog.Default;
+        _bodyColor = string.IsNullOrWhiteSpace(cfg.BodyColor) ? _bodyColor : cfg.BodyColor;
+        _config.SizeKey = cfg.SizeKey;
+        _config.MaterialName = cfg.MaterialName;
+        _config.TemplateId = cfg.TemplateId;
+        _config.Line1 = cfg.Line1;
+        _config.Line2 = cfg.Line2;
+    }
 
     private string HeadingNoun => Language.T(_config.Size.AllowsText ? "keychain" : "figure");
 

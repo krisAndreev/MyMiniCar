@@ -253,7 +253,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `src/MyMiniCar.Web/Pages/Convert.razor`
 - Modify: `src/MyMiniCar.Web/Pages/Account.razor`
 
-- [ ] **Step 1: Add a saved-config shape + Save button + load to Convert.razor**
+- [x] **Step 1: Add a saved-config shape + Save button + load to Convert.razor**
 
 At the top of `src/MyMiniCar.Web/Pages/Convert.razor`, after the existing `@inject` lines, add:
 ```razor
@@ -323,7 +323,7 @@ Add a query parameter + the save/load logic to the `@code` block:
 ```
 NOTE: keep the existing `OnInitialized()` that subscribes to `Language.OnChange`. If the existing method is `protected override void OnInitialized()`, leave it and ADD the async `OnInitializedAsync()` above (Blazor calls both). Do not merge or delete the language subscription.
 
-- [ ] **Step 2: Add a "My designs" section to Account.razor**
+- [x] **Step 2: Add a "My designs" section to Account.razor**
 
 In `src/MyMiniCar.Web/Pages/Account.razor`, add the injects at the top (after the existing `@inject OrdersService Orders`):
 ```razor
@@ -375,12 +375,12 @@ Concretely, replace the existing `OnInitializedAsync` in Account.razor with:
     }
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Pages/Convert.razor src/MyMiniCar.Web/Pages/Account.razor

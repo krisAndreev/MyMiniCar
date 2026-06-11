@@ -2,6 +2,8 @@
 @attribute [Authorize]
 @using MyMiniCar.Web.Services
 @inject OrdersService Orders
+@inject DesignsService Designs
+@inject NavigationManager Nav
 
 <PageTitle>My orders</PageTitle>
 <div class="account-page">
@@ -33,15 +35,43 @@
             </div>
         }
     }
+
+    <h2 class="mt-5">My designs</h2>
+    @if (_designs is null || _designs.Count == 0)
+    {
+        <p>No saved designs yet.</p>
+    }
+    else
+    {
+        <div class="design-list">
+            @foreach (var d in _designs)
+            {
+                <div class="design-card">
+                    <span class="design-name">@(d.Name ?? "Untitled")</span>
+                    <span class="design-date">@d.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                    <a class="btn-outline-c btn-sm-c" href="@($"convert?design={d.Id}")">Load</a>
+                    <button class="btn-outline-c btn-sm-c" @onclick="() => Delete(d.Id)">Delete</button>
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @code {
     private List<OrderView>? _orders;
+    private List<DesignView>? _designs;
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         _orders = await Orders.GetMineAsync();
+        _designs = await Designs.GetMineAsync();
         _loading = false;
+    }
+
+    private async Task Delete(Guid id)
+    {
+        if (await Designs.DeleteAsync(id))
+            _designs = await Designs.GetMineAsync();
     }
 }
