@@ -212,30 +212,6 @@ public class LanguageService
         ["Bigger, with the finest detail"] = "По-голям, с най-фин детайл"
     };
 
-    private readonly Dictionary<string, string> _productNamesBg = new()
-    {
-        ["golf-keychain"] = "Ключодържател VW Golf IV",
-        ["audi-a4-keychain"] = "Ключодържател Audi A4 (B6)",
-        ["passat-keychain"] = "Ключодържател VW Passat B5",
-        ["mercedes-w124-keychain"] = "Ключодържател Mercedes W124 300CE",
-        ["skoda-octavia-keychain"] = "Ключодържател Skoda Octavia",
-        ["led-keyring"] = "LED светеща халка",
-        ["display-stand"] = "Магнитна стойка",
-        ["hardware-pack"] = "Комплект халки и аксесоари"
-    };
-
-    private readonly Dictionary<string, string> _productDescriptionsBg = new()
-    {
-        ["golf-keychain"] = "Иконата сред хечбеците, смалена до джобен ключодържател. Принтира се по поръчка в избран PLA филамент — добави име, номер или състезателен номер в студиото.",
-        ["audi-a4-keychain"] = "Сдържаният седан от 2000-те, миниатюризиран с внимание. Чист премиум силует, който изглежда отлично във всеки финиш.",
-        ["passat-keychain"] = "Универсалният семеен Volkswagen като плътен ключодържател. Стои страхотно в наситени плътни цветове.",
-        ["mercedes-w124-keychain"] = "Неразрушимата модерна класика. Купе профил с присъствие, което заслужава премиум финиш.",
-        ["skoda-octavia-keychain"] = "Надеждният ежедневен автомобил в мини размер. Чиста форма, която се принтира добре във всеки филамент.",
-        ["led-keyring"] = "Допълнителен аксесоар: LED халка с бутон, която се закача към всеки MyMiniCar модел и го осветява при нужда.",
-        ["display-stand"] = "Малка принтирана стойка, с която ключодържателят става детайл за бюро или рафт, когато не е на ключовете.",
-        ["hardware-pack"] = "Резервни халки, клипсове и верижки, за да закачиш моделите точно както искаш."
-    };
-
     public SiteLanguage Current { get; private set; } = SiteLanguage.English;
     public bool IsBulgarian => Current == SiteLanguage.Bulgarian;
     public string CurrentCode => IsBulgarian ? "BG" : "EN";
@@ -254,8 +230,9 @@ public class LanguageService
     public string ProductName(Product product)
     {
         if (!IsBulgarian) return product.Name;
-        if (_productNamesBg.TryGetValue(product.Id, out var translated)) return translated;
+        if (!string.IsNullOrWhiteSpace(product.NameBg)) return product.NameBg;
 
+        // Studio-generated products aren't in the DB — translate their name inline.
         if (product.Id.StartsWith("custom-", StringComparison.OrdinalIgnoreCase)
             && product.Name.StartsWith("Custom ", StringComparison.OrdinalIgnoreCase))
         {
@@ -267,7 +244,7 @@ public class LanguageService
     }
 
     public string ProductDescription(Product product) =>
-        IsBulgarian && _productDescriptionsBg.TryGetValue(product.Id, out var translated)
-            ? translated
+        IsBulgarian && !string.IsNullOrWhiteSpace(product.DescriptionBg)
+            ? product.DescriptionBg
             : product.Description;
 }

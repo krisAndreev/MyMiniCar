@@ -41,15 +41,15 @@
 - Modify: `src/MyMiniCar.Web/Models/Product.cs`
 - Modify: `src/MyMiniCar.Web/Services/LanguageService.cs`
 
-- [ ] **Step 1: Add NameBg/DescriptionBg to Product**
-- [ ] **Step 2: Rewrite ProductName/ProductDescription to use model fields; drop the dicts**
-- [ ] **Step 3: Build**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: Add NameBg/DescriptionBg to Product**
+- [x] **Step 2: Rewrite ProductName/ProductDescription to use model fields; drop the dicts**
+- [x] **Step 3: Build**
+- [x] **Step 4: Commit**
 
 ## Task 4: End-to-end verify
 
-- [ ] **Step 1: API returns localized fields for all 8 products**
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 1: API returns localized fields for all 8 products**
+- [x] **Step 2: Commit plan complete**
 
 ## Self-Review
 - Option A per-language columns ✓. Both languages returned → instant client toggle preserved.
