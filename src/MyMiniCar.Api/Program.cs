@@ -46,6 +46,7 @@ builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<ProfileRepository>();
 builder.Services.AddScoped<DesignRepository>();
+builder.Services.AddScoped<AnalyticsRepository>();
 
 var supabaseUrl = builder.Configuration["Supabase:Url"]
     ?? throw new InvalidOperationException("Supabase:Url not configured.");
@@ -460,6 +461,13 @@ app.MapPost("/api/admin/orders/{id:guid}/status", async (Guid id, string status,
     var guard = await RequireAdmin(user, profiles);
     if (guard is not null) return guard;
     return await orders.UpdateStatusAsync(id, status) ? Results.NoContent() : Results.BadRequest(new { error = "Invalid status or order." });
+}).RequireAuthorization();
+
+app.MapGet("/api/admin/analytics", async (ClaimsPrincipal user, ProfileRepository profiles, AnalyticsRepository analytics) =>
+{
+    var guard = await RequireAdmin(user, profiles);
+    if (guard is not null) return guard;
+    return Results.Ok(await analytics.GetSummaryAsync());
 }).RequireAuthorization();
 
 // DB connectivity probe. Returns 200 if the Supabase Postgres responds.

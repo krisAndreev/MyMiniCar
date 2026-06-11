@@ -33,7 +33,7 @@
 - Create: `src/MyMiniCar.Api/Data/AnalyticsRepository.cs`
 - Modify: `src/MyMiniCar.Api/Program.cs`
 
-- [ ] **Step 1: Create the models**
+- [x] **Step 1: Create the models**
 
 `src/MyMiniCar.Api/Models/AnalyticsModels.cs`:
 ```csharp
@@ -53,7 +53,7 @@ public sealed record AnalyticsSummary(
     IReadOnlyList<RevenuePoint> RevenueByDay);
 ```
 
-- [ ] **Step 2: Create the repository**
+- [x] **Step 2: Create the repository**
 
 `src/MyMiniCar.Api/Data/AnalyticsRepository.cs`:
 ```csharp
@@ -132,7 +132,7 @@ public sealed class AnalyticsRepository
 }
 ```
 
-- [ ] **Step 3: Register repo + endpoint in Program.cs**
+- [x] **Step 3: Register repo + endpoint in Program.cs**
 
 Next to the other repo registrations:
 ```csharp
@@ -148,7 +148,7 @@ app.MapGet("/api/admin/analytics", async (ClaimsPrincipal user, ProfileRepositor
 }).RequireAuthorization();
 ```
 
-- [ ] **Step 4: Build + smoke**
+- [x] **Step 4: Build + smoke**
 
 Run:
 ```bash
@@ -160,7 +160,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: 0 errors; `analytics-anon=401`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/MyMiniCar.Api/Models/AnalyticsModels.cs src/MyMiniCar.Api/Data/AnalyticsRepository.cs src/MyMiniCar.Api/Program.cs
