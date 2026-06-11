@@ -3,15 +3,16 @@
 @inject CartService CartService
 @inject CheckoutService CheckoutService
 @inject ShippingService ShippingService
+@inject LanguageService Language
 @inject NavigationManager Navigation
 @implements IDisposable
 
 <div class="container py-5">
     <div class="text-center mb-5">
-        <span class="eyebrow">Checkout</span>
-        <h1 class="mt-3 mb-2">Almost there</h1>
+        <span class="eyebrow">@Language.T("Checkout")</span>
+        <h1 class="mt-3 mb-2">@Language.T("Almost there")</h1>
         <p class="text-soft mx-auto" style="max-width: 30rem;">
-            Enter your details, choose Econt delivery, then pay securely with card. We print to order in 3–5 days.
+            @Language.T("Enter your details, choose Econt delivery, then pay securely with card. We print to order in 3–5 days.")
         </p>
     </div>
 
@@ -19,20 +20,19 @@
     {
         <div class="studio-panel text-center py-5 mx-auto" style="max-width: 30rem;">
             <i class="bi bi-bag" style="font-size: 2.4rem; color: var(--ink-faint);"></i>
-            <p class="mt-3 text-soft">Your cart is empty.</p>
-            <button class="btn-primary-c mt-2" @onclick="@(() => Navigation.NavigateTo("products"))">Browse keychains</button>
+            <p class="mt-3 text-soft">@Language.T("Your cart is empty.")</p>
+            <button class="btn-primary-c mt-2" @onclick="@(() => Navigation.NavigateTo("products"))">@Language.T("Browse keychains")</button>
         </div>
     }
     else
     {
         <div class="row g-4 g-lg-5">
-            <!-- Details form -->
             <div class="col-lg-7">
                 <div class="studio-panel">
                     @if (Canceled == "true")
                     {
                         <div class="alert-c mb-4" style="background: rgba(255,74,46,0.08); color: var(--accent-600); border-color: rgba(255,74,46,0.3);">
-                            <i class="bi bi-info-circle"></i> Payment was canceled — your cart is still here whenever you're ready.
+                            <i class="bi bi-info-circle"></i> @Language.T("Payment was canceled — your cart is still here whenever you're ready.")
                         </div>
                     }
                     @if (_error is not null)
@@ -42,37 +42,37 @@
                         </div>
                     }
 
-                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-person"></i></span> Your details</div>
+                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-person"></i></span> @Language.T("Your details")</div>
 
-                    <label class="field-label">Email</label>
+                    <label class="field-label">@Language.T("Email")</label>
                     <input class="input-c mb-3" type="email" placeholder="you@email.com" @bind="_email" />
 
-                    <label class="field-label">Full name</label>
+                    <label class="field-label">@Language.T("Full name")</label>
                     <input class="input-c mb-3" placeholder="Jane Driver" @bind="_name" />
 
-                    <label class="field-label">Phone</label>
+                    <label class="field-label">@Language.T("Phone")</label>
                     <input class="input-c" placeholder="0888 123 456" @bind="_phone" />
 
-                    <div class="studio-step-title mt-4"><span class="studio-step-num"><i class="bi bi-truck"></i></span> Delivery</div>
+                    <div class="studio-step-title mt-4"><span class="studio-step-num"><i class="bi bi-truck"></i></span> @Language.T("Delivery")</div>
 
                     <div class="d-flex gap-2 mb-3">
                         <button type="button" class="@DeliveryTabClass("address")" @onclick='() => SetDeliveryMode("address")'>
-                            <i class="bi bi-house-door"></i> To address
+                            <i class="bi bi-house-door"></i> @Language.T("To address")
                         </button>
                         <button type="button" class="@DeliveryTabClass("office")" @onclick='() => SetDeliveryMode("office")'>
-                            <i class="bi bi-shop"></i> To Econt office
+                            <i class="bi bi-shop"></i> @Language.T("To Econt office")
                         </button>
                     </div>
 
-                    <label class="field-label">City</label>
+                    <label class="field-label">@Language.T("City")</label>
                     @if (_citiesLoading)
                     {
-                        <div class="input-c d-flex align-items-center text-faint"><span class="spinner-c"></span> <span class="ms-2">Loading cities…</span></div>
+                        <div class="input-c d-flex align-items-center text-faint"><span class="spinner-c"></span> <span class="ms-2">@Language.T("Loading cities...")</span></div>
                     }
                     else
                     {
                         <select class="input-c" @bind="_selectedCityId" @bind:after="OnCityChanged">
-                            <option value="">— select a city —</option>
+                            <option value="">@Language.T("— select a city —")</option>
                             @foreach (var c in CityOptions)
                             {
                                 <option value="@c.Id">@CityDisplay(c)</option>
@@ -82,20 +82,20 @@
 
                     @if (_deliveryMode == "address")
                     {
-                        <label class="field-label mt-3">Address</label>
-                        <input class="input-c" placeholder="Street, number, floor — anything a courier can find" @bind="_address" />
+                        <label class="field-label mt-3">@Language.T("Address")</label>
+                        <input class="input-c" placeholder='@Language.T("Street, number, floor — anything a courier can find")' @bind="_address" />
                     }
                     else
                     {
-                        <label class="field-label mt-3">Office</label>
+                        <label class="field-label mt-3">@Language.T("Office")</label>
                         @if (_officesLoading)
                         {
-                            <div class="input-c d-flex align-items-center text-faint"><span class="spinner-c"></span> <span class="ms-2">Loading offices…</span></div>
+                            <div class="input-c d-flex align-items-center text-faint"><span class="spinner-c"></span> <span class="ms-2">@Language.T("Loading offices...")</span></div>
                         }
                         else if (_offices.Any())
                         {
                             <select class="input-c" @bind="_selectedOfficeCode" @bind:after="OnOfficeChanged">
-                                <option value="">— select an office —</option>
+                                <option value="">@Language.T("— select an office —")</option>
                                 @foreach (var office in _offices)
                                 {
                                     <option value="@office.Code">@office.Name — @office.Address</option>
@@ -104,17 +104,17 @@
                         }
                         else if (_selectedCity is not null)
                         {
-                            <p class="text-faint" style="font-size: 0.8rem;">No Econt offices in this city. Try delivery to address instead.</p>
+                            <p class="text-faint" style="font-size: 0.8rem;">@Language.T("No Econt offices in this city. Try delivery to address instead.")</p>
                         }
                         else
                         {
-                            <p class="text-faint" style="font-size: 0.8rem;">Choose a city first to list its offices.</p>
+                            <p class="text-faint" style="font-size: 0.8rem;">@Language.T("Choose a city first to list its offices.")</p>
                         }
                     }
 
                     @if (_quoteLoading)
                     {
-                        <p class="text-faint text-center mt-4 mb-0" style="font-size: 0.78rem;"><span class="spinner-c"></span> <span>Calculating Econt delivery…</span></p>
+                        <p class="text-faint text-center mt-4 mb-0" style="font-size: 0.78rem;"><span class="spinner-c"></span> <span>@Language.T("Calculating Econt delivery...")</span></p>
                     }
                     else if (_quoteNote is not null)
                     {
@@ -124,24 +124,23 @@
                     <button class="btn-accent-c btn-block btn-lg mt-3" disabled="@(_busy || !CanPay)" @onclick="Pay">
                         @if (_busy)
                         {
-                            <span class="spinner-c"></span> <span>Redirecting to secure checkout…</span>
+                            <span class="spinner-c"></span> <span>@Language.T("Redirecting to secure checkout...")</span>
                         }
                         else
                         {
                             <i class="bi bi-lock-fill"></i>
-                            <span>Pay @Fmt(Total)</span>
+                            <span>@Language.T("Pay") @Fmt(Total)</span>
                         }
                     </button>
                     <p class="text-center text-faint mt-3 mb-0" style="font-size: 0.74rem;">
-                        <i class="bi bi-shield-lock"></i> Payments processed securely by Stripe. Test mode — use card 4242 4242 4242 4242.
+                        <i class="bi bi-shield-lock"></i> @Language.T("Payments processed securely by Stripe. Test mode — use card 4242 4242 4242 4242.")
                     </p>
                 </div>
             </div>
 
-            <!-- Order summary -->
             <div class="col-lg-5">
                 <div class="studio-panel">
-                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-bag"></i></span> Order summary</div>
+                    <div class="studio-step-title"><span class="studio-step-num"><i class="bi bi-bag"></i></span> @Language.T("Order summary")</div>
 
                     <div class="order-lines">
                         @foreach (var item in CartService.Items)
@@ -150,7 +149,7 @@
                                 <div class="order-line-img @item.Product.TileClass">
                                     @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
                                     {
-                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" />
+                                        <img src="@item.Product.ImageUrl" alt="@Language.ProductName(item.Product)" />
                                     }
                                     else
                                     {
@@ -159,8 +158,8 @@
                                     <span class="order-line-qty">@item.Quantity</span>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="order-line-name">@item.Product.Name</div>
-                                    <div class="text-faint" style="font-size: 0.78rem;">@item.SelectedMaterial</div>
+                                    <div class="order-line-name">@Language.ProductName(item.Product)</div>
+                                    <div class="text-faint" style="font-size: 0.78rem;">@Language.T(item.SelectedMaterial)</div>
                                 </div>
                                 <div class="order-line-price">@Fmt(item.Product.Price * item.Quantity)</div>
                             </div>
@@ -169,15 +168,15 @@
 
                     <div class="order-totals">
                         <div class="d-flex justify-content-between">
-                            <span class="text-soft">Subtotal</span>
+                            <span class="text-soft">@Language.T("Subtotal")</span>
                             <span>@Fmt(Subtotal)</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span class="text-soft">Shipping</span>
+                            <span class="text-soft">@Language.T("Shipping")</span>
                             <span>@ShippingLabel</span>
                         </div>
                         <div class="d-flex justify-content-between order-grand">
-                            <span>Total</span>
+                            <span>@Language.T("Total")</span>
                             <span>@Fmt(Total)</span>
                         </div>
                     </div>
@@ -185,7 +184,7 @@
                     @if (Subtotal < FreeShippingThreshold && _quote is null)
                     {
                         <p class="text-faint text-center mt-3 mb-0" style="font-size: 0.74rem;">
-                            Add @Fmt(FreeShippingThreshold - Subtotal) more for free shipping, or calculate Econt delivery above.
+                            @Language.T("Add") @Fmt(FreeShippingThreshold - Subtotal) @Language.T("more for free shipping, or calculate Econt delivery above.")
                         </p>
                     }
                 </div>
@@ -234,7 +233,7 @@
     private double WeightKg => Math.Max(0.1, CartService.Items.Sum(i => i.Quantity * i.Product.WeightGrams) / 1000.0);
 
     private string ShippingLabel => FreeShipping
-        ? "Free"
+        ? Language.T("Free")
         : _quote is null ? "—" : Fmt(_quote.Price);
 
     private bool DeliveryReady => _selectedCity is not null && (_deliveryMode == "office"
@@ -264,6 +263,7 @@
     protected override async Task OnInitializedAsync()
     {
         CartService.OnChange += StateHasChanged;
+        Language.OnChange += StateHasChanged;
         _allCities = await ShippingService.GetCitiesAsync();
         _citiesLoading = false;
     }
@@ -335,14 +335,14 @@
         if (quote is null)
         {
             _quote = new ShippingQuote(5.90m, "EUR");
-            _quoteNote = "Couldn't reach Econt just now — applying a standard €5.90 rate.";
+            _quoteNote = Language.T("Couldn't reach Econt just now — applying a standard €5.90 rate.");
         }
         else
         {
             _quote = quote;
             _quoteNote = FreeShipping
-                ? "Your order qualifies for free shipping — Econt cost is covered."
-                : $"Econt delivery: {Fmt(quote.Price)}.";
+                ? Language.T("Your order qualifies for free shipping — Econt cost is covered.")
+                : $"{Language.T("Econt delivery:")} {Fmt(quote.Price)}.";
         }
     }
 
@@ -353,8 +353,8 @@
 
         var request = new CreateCheckoutRequest(
             Items: CartService.Items.Select(i => new CheckoutItem(
-                Name: i.Product.Name,
-                Description: string.IsNullOrWhiteSpace(i.SelectedMaterial) ? null : $"{i.SelectedMaterial} PLA",
+                Name: Language.ProductName(i.Product),
+                Description: string.IsNullOrWhiteSpace(i.SelectedMaterial) ? null : $"{Language.T(i.SelectedMaterial)} PLA",
                 UnitAmount: i.Product.Price,
                 Quantity: i.Quantity)).ToList(),
             Email: _email,
@@ -375,7 +375,7 @@
             var result = await CheckoutService.CreateSessionAsync(request);
             if (result is null || string.IsNullOrEmpty(result.Url))
             {
-                _error = "We couldn't start the payment. Please make sure the payments service is running and try again.";
+                _error = Language.T("We couldn't start the payment. Please make sure the payments service is running and try again.");
                 _busy = false;
                 return;
             }
@@ -384,10 +384,14 @@
         }
         catch (Exception)
         {
-            _error = "We couldn't reach the payments service. Please try again in a moment.";
+            _error = Language.T("We couldn't reach the payments service. Please try again in a moment.");
             _busy = false;
         }
     }
 
-    public void Dispose() => CartService.OnChange -= StateHasChanged;
+    public void Dispose()
+    {
+        CartService.OnChange -= StateHasChanged;
+        Language.OnChange -= StateHasChanged;
+    }
 }

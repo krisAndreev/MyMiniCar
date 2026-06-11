@@ -1,6 +1,11 @@
 @inherits LayoutComponentBase
 @inject CartService CartService
+@inject LanguageService Language
 @implements IDisposable
+
+<HeadContent>
+    <title>@Language.T("MyMiniCar | 3D-Printed Keychains of Your Car")</title>
+</HeadContent>
 
 <div class="app-container">
     <header class="site-header">
@@ -20,7 +25,7 @@
                         MyMini<span>Car</span>
                     </div>
                     <p style="color: rgba(255,255,255,0.6); max-width: 26rem;">
-                        We turn a photo of your car into a 3D-printed keyring tag — printed to order in real PLA filament and shipped worldwide.
+                        @Language.T("We turn a photo of your car into a 3D-printed keyring tag — printed to order in real PLA filament and shipped worldwide.")
                     </p>
                     <div class="footer-social mt-4">
                         <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
@@ -30,26 +35,26 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <h4 class="footer-title">Shop</h4>
+                    <h4 class="footer-title">@Language.T("Shop")</h4>
                     <ul class="footer-links">
-                        <li><a href="products">All keychains</a></li>
-                        <li><a href="products">Bundles</a></li>
-                        <li><a href="products">Premium</a></li>
-                        <li><a href="products">Accessories</a></li>
+                        <li><a href="products">@Language.T("All keychains")</a></li>
+                        <li><a href="products">@Language.T("Bundles")</a></li>
+                        <li><a href="products">@Language.T("Premium")</a></li>
+                        <li><a href="products">@Language.T("Accessories")</a></li>
                     </ul>
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <h4 class="footer-title">Make</h4>
+                    <h4 class="footer-title">@Language.T("Make")</h4>
                     <ul class="footer-links">
-                        <li><a href="convert">Open Studio</a></li>
-                        <li><a href="about">How it works</a></li>
-                        <li><a href="about">Materials</a></li>
-                        <li><a href="about">Shipping</a></li>
+                        <li><a href="convert">@Language.T("Open Studio")</a></li>
+                        <li><a href="about">@Language.T("How it works")</a></li>
+                        <li><a href="about">@Language.T("Materials")</a></li>
+                        <li><a href="about">@Language.T("Shipping")</a></li>
                     </ul>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <h4 class="footer-title">Get 10% off your first tag</h4>
-                    <p style="color: rgba(255,255,255,0.6);">New filament drops and offers, no spam.</p>
+                    <h4 class="footer-title">@Language.T("Get 10% off your first tag")</h4>
+                    <p style="color: rgba(255,255,255,0.6);">@Language.T("New filament drops and offers, no spam.")</p>
                     <div class="d-flex gap-2 mt-3">
                         <input type="email" placeholder="you@email.com" class="input-c" />
                         <button class="btn-primary-c"><i class="bi bi-arrow-right"></i></button>
@@ -57,21 +62,20 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>© @DateTime.Now.Year MyMiniCar. Printed to order with care.</div>
+                <div>© @DateTime.Now.Year MyMiniCar. @Language.T("Printed to order with care.")</div>
                 <div class="d-flex gap-4">
-                    <a href="#" style="color: rgba(255,255,255,0.6);">Privacy</a>
-                    <a href="#" style="color: rgba(255,255,255,0.6);">Terms</a>
+                    <a href="#" style="color: rgba(255,255,255,0.6);">@Language.T("Privacy")</a>
+                    <a href="#" style="color: rgba(255,255,255,0.6);">@Language.T("Terms")</a>
                 </div>
             </div>
         </div>
     </footer>
 </div>
 
-<!-- Cart Drawer -->
 <div class="cart-backdrop @(CartService.IsCartOpen ? "show" : "")" @onclick="CloseCart"></div>
 <div class="cart-drawer @(CartService.IsCartOpen ? "show" : "")">
     <div class="cart-head">
-        <h3>Your cart</h3>
+        <h3>@Language.T("Your cart")</h3>
         <button class="close-x" @onclick="CloseCart"><i class="bi bi-x-lg"></i></button>
     </div>
 
@@ -80,8 +84,8 @@
         {
             <div class="text-center py-5 text-soft">
                 <i class="bi bi-bag" style="font-size: 2.4rem; color: var(--ink-faint);"></i>
-                <p class="mt-3">Your cart is empty.</p>
-                <button class="btn-primary-c btn-sm-c mt-2" @onclick="CloseAndGoStudio">Make a keychain</button>
+                <p class="mt-3">@Language.T("Your cart is empty.")</p>
+                <button class="btn-primary-c btn-sm-c mt-2" @onclick="CloseAndGoStudio">@Language.T("Make a keychain")</button>
             </div>
         }
         else
@@ -91,7 +95,7 @@
                 <div class="cart-item">
                     @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
                     {
-                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="cart-item-img" />
+                        <img src="@item.Product.ImageUrl" alt="@Language.ProductName(item.Product)" class="cart-item-img" />
                     }
                     else
                     {
@@ -100,8 +104,8 @@
                         </div>
                     }
                     <div class="cart-item-details flex-grow-1">
-                        <div class="cart-item-name">@item.Product.Name</div>
-                        <div class="cart-item-meta">@item.SelectedMaterial</div>
+                        <div class="cart-item-name">@Language.ProductName(item.Product)</div>
+                        <div class="cart-item-meta">@Language.T(item.SelectedMaterial)</div>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <div class="qty">
                                 <button @onclick="() => DecreaseQty(item)"><i class="bi bi-dash"></i></button>
@@ -120,11 +124,11 @@
     {
         <div class="cart-foot">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-soft">Subtotal</span>
+                <span class="text-soft">@Language.T("Subtotal")</span>
                 <span class="font-display" style="font-size: 1.3rem; font-weight: 700;">@CartService.GetTotal().ToString("C2")</span>
             </div>
-            <button class="btn-primary-c btn-block btn-lg" @onclick="ProceedToCheckout">Checkout</button>
-            <p class="text-center text-faint mt-3 mb-0" style="font-size: 0.74rem;">Free shipping over $40 · printed in 3–5 days</p>
+            <button class="btn-primary-c btn-block btn-lg" @onclick="ProceedToCheckout">@Language.T("Checkout")</button>
+            <p class="text-center text-faint mt-3 mb-0" style="font-size: 0.74rem;">@Language.T("Free shipping over $40 · printed in 3–5 days")</p>
         </div>
     }
 </div>
@@ -132,7 +136,11 @@
 @code {
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    protected override void OnInitialized() => CartService.OnChange += StateHasChanged;
+    protected override void OnInitialized()
+    {
+        CartService.OnChange += StateHasChanged;
+        Language.OnChange += StateHasChanged;
+    }
 
     private void CloseCart() => CartService.IsCartOpen = false;
 
@@ -151,5 +159,9 @@
         Navigation.NavigateTo("checkout");
     }
 
-    public void Dispose() => CartService.OnChange -= StateHasChanged;
+    public void Dispose()
+    {
+        CartService.OnChange -= StateHasChanged;
+        Language.OnChange -= StateHasChanged;
+    }
 }

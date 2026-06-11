@@ -13,6 +13,10 @@ var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get
 
 builder.Services.AddCors(options => options.AddPolicy(CorsPolicy, policy =>
     policy.WithOrigins(allowedOrigins)
+          .SetIsOriginAllowed(origin =>
+              builder.Environment.IsDevelopment()
+              && Uri.TryCreate(origin, UriKind.Absolute, out var uri)
+              && string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase))
           .AllowAnyHeader()
           .AllowAnyMethod()));
 

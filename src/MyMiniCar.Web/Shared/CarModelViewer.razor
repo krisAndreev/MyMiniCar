@@ -1,33 +1,24 @@
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JS
-
-@*
-   3D car preview. Loads the glTF via a Three.js interop module, supports
-   drag-orbit + zoom, and live body recolouring driven by the Color parameter.
-*@
+@inject LanguageService Language
 
 <div class="car-model-viewer">
     <div class="car-model-stage" @ref="_stage"></div>
     <p class="text-faint m-0 car-model-hint">
-        <i class="bi bi-arrows-move"></i> @(EnableZoom ? "Drag to rotate · scroll to zoom" : "Drag to rotate")
+        <i class="bi bi-arrows-move"></i> @(EnableZoom ? Language.T("Drag to rotate · scroll to zoom") : Language.T("Drag to rotate"))
     </p>
 </div>
 
 @code {
-    /// <summary>Effective body colour (paintable → body colour, else material fixed finish).</summary>
     [Parameter] public string Color { get; set; } = "#2D6CFF";
     [Parameter] public double Metalness { get; set; } = 0.35;
     [Parameter] public double Roughness { get; set; } = 0.45;
     [Parameter] public bool Emissive { get; set; }
     [Parameter] public string ModelUrl { get; set; } = "models/golf/untitled.gltf";
-    /// <summary>Allow scroll-to-zoom. When false the model is rotate-only (display use).</summary>
     [Parameter] public bool EnableZoom { get; set; } = true;
-    /// <summary>Gently auto-spin the model (display use).</summary>
     [Parameter] public bool AutoRotate { get; set; }
-    /// <summary>Recolour the body to <see cref="Color"/>. When false the model keeps its original textures.</summary>
     [Parameter] public bool Recolor { get; set; } = true;
-    /// <summary>Apparent model size when framed: 1 = fill, 0.8 = 80% (pulled back).</summary>
     [Parameter] public double FitScale { get; set; } = 1;
 
     private ElementReference _stage;
@@ -77,6 +68,6 @@
             if (_module is not null)
                 await _module.DisposeAsync();
         }
-        catch (JSDisconnectedException) { /* circuit gone; nothing to clean */ }
+        catch (JSDisconnectedException) { }
     }
 }

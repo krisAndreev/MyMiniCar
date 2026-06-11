@@ -1,41 +1,40 @@
 @page "/"
 @inject IProductService ProductService
 @inject CartService CartService
+@inject LanguageService Language
+@implements IDisposable
 
-<!-- Hero -->
 <section class="hero">
     <div class="hero-blob a"></div>
     <div class="hero-blob b"></div>
     <div class="container">
         <div class="row align-items-center gy-5">
             <div class="col-lg-6">
-                <span class="eyebrow">3D-printed · made to order</span>
-                <h1 class="hero-title mt-3">Your car, shrunk to fit your <span class="hl">pocket</span>.</h1>
+                <span class="eyebrow">@Language.T("3D-printed · made to order")</span>
+                <h1 class="hero-title mt-3">@Language.T("Your car, shrunk to fit your") <span class="hl">@Language.T("pocket")</span>.</h1>
                 <p class="hero-lead">
-                    Pick your model, choose your colour and size, and watch it spin in 3D before you buy.
-                    We print it to order and ship it to your door.
+                    @Language.T("Pick your model, choose your colour and size, and watch it spin in 3D before you buy. We print it to order and ship it to your door.")
                 </p>
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Design yours now</a>
-                    <span class="price-anchor">from <strong>@Sizes.Default.BasePrice.ToString("C2")</strong></span>
-
+                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> @Language.T("Design yours now")</a>
+                    <span class="price-anchor">@Language.T("from") <strong>@Sizes.Default.BasePrice.ToString("C2")</strong></span>
                 </div>
                 <p class="text-soft mb-4" style="font-size: 0.84rem;">
-                    <i class="bi bi-shield-check text-primary-c me-1"></i>30-day remake guarantee · free shipping over $40 · no account needed
+                    <i class="bi bi-shield-check text-primary-c me-1"></i>@Language.T("30-day remake guarantee · free shipping over $40 · no account needed")
                 </p>
                 <div class="d-flex flex-wrap gap-4 pt-2 text-soft" style="font-size: 0.86rem;">
-                    <span><i class="bi bi-star-fill text-accent-c me-1"></i>4.9/5 from 2,000+ drivers</span>
-                    <span class="ship-note"><span class="live-dot"></span> Printing today — ships in 3–5 days</span>
+                    <span><i class="bi bi-star-fill text-accent-c me-1"></i>@Language.T("4.9/5 from 2,000+ drivers")</span>
+                    <span class="ship-note"><span class="live-dot"></span> @Language.T("Printing today — ships in 3–5 days")</span>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-stage">                    
+                <div class="hero-stage">
                     <div class="preview-canvas blueprint-soft" style="border-radius: var(--radius); aspect-ratio: 5/4;">
                         <CarModelViewer ModelUrl="models/skoda-octavia-2005/scene.gltf"
-                                    EnableZoom="false"
-                                    AutoRotate="true"
-                                    Recolor="false"
-                                    FitScale="2.0" />
+                                        EnableZoom="false"
+                                        AutoRotate="true"
+                                        Recolor="false"
+                                        FitScale="2.0" />
                     </div>
                 </div>
             </div>
@@ -43,41 +42,39 @@
     </div>
 </section>
 
-<!-- How it works strip -->
 <section class="strip">
     <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <div class="strip-item">
                     <div class="strip-num">01</div>
-                    <div><h5>Pick your model</h5><p>Choose your car from the catalogue — Golf, Passat, W124 and more.</p></div>
+                    <div><h5>@Language.T("Pick your model")</h5><p>@Language.T("Choose your car from the catalogue — Golf, Passat, W124 and more.")</p></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="strip-item">
                     <div class="strip-num">02</div>
-                    <div><h5>Customise & preview</h5><p>Choose your colour and size. See exactly how it'll look, live in 3D.</p></div>
+                    <div><h5>@Language.T("Customise & preview")</h5><p>@Language.T("Choose your colour and size. See exactly how it'll look, live in 3D.")</p></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="strip-item">
                     <div class="strip-num">03</div>
-                    <div><h5>We print & ship</h5><p>Printed to order in 3–5 days and sent to your door, keyring attached.</p></div>
+                    <div><h5>@Language.T("We print & ship")</h5><p>@Language.T("Printed to order in 3–5 days and sent to your door, keyring attached.")</p></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Featured -->
 <section class="section">
     <div class="container">
         <div class="section-head d-flex justify-content-between align-items-end flex-wrap gap-3">
             <div>
-                <span class="eyebrow">Fan favourites</span>
-                <h2 class="mt-2 mb-0">Popular keychains</h2>
+                <span class="eyebrow">@Language.T("Fan favourites")</span>
+                <h2 class="mt-2 mb-0">@Language.T("Popular keychains")</h2>
             </div>
-            <a href="products" class="link-arrow">View all <i class="bi bi-arrow-right"></i></a>
+            <a href="products" class="link-arrow">@Language.T("View all") <i class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row g-4">
@@ -94,23 +91,23 @@
                             <div class="kc-thumb @(string.IsNullOrEmpty(p.ImageUrl) ? p.TileClass : "car-thumb")">
                                 @if (!string.IsNullOrEmpty(p.ImageUrl))
                                 {
-                                    <img src="@p.ImageUrl" alt="@p.Name" />
+                                    <img src="@p.ImageUrl" alt="@Language.ProductName(p)" />
                                 }
                                 else
                                 {
                                     <i class="bi bi-car-front-fill" style="font-size: 3.4rem; color: rgba(255,255,255,0.9);"></i>
                                 }
-                                <span class="kc-badge">@p.Category</span>
+                                <span class="kc-badge">@Language.T(p.Category)</span>
                                 <div class="kc-overlay">
-                                    <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">Add to cart</button>
+                                    <button class="btn-primary-c btn-block btn-sm-c" @onclick="() => QuickAdd(p)">@Language.T("Add to cart")</button>
                                 </div>
                             </div>
                             <div class="kc-body">
-                                <span class="kc-cat">@p.DefaultMaterial</span>
-                                <h3 class="kc-name">@p.Name</h3>
+                                <span class="kc-cat">@Language.T(p.DefaultMaterial)</span>
+                                <h3 class="kc-name">@Language.ProductName(p)</h3>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="kc-price">@p.Price.ToString("C2")</span>
-                                    <a href="convert" class="link-arrow" style="font-size: 0.84rem;">Customise <i class="bi bi-arrow-right"></i></a>
+                                    <a href="convert" class="link-arrow" style="font-size: 0.84rem;">@Language.T("Customise") <i class="bi bi-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -121,12 +118,11 @@
     </div>
 </section>
 
-<!-- Social proof -->
 <section class="section pt-0">
     <div class="container">
         <div class="section-head text-center">
-            <span class="eyebrow justify-content-center">Loved by drivers</span>
-            <h2 class="mt-2 mb-0">2,000+ minis on keyrings worldwide</h2>
+            <span class="eyebrow justify-content-center">@Language.T("Loved by drivers")</span>
+            <h2 class="mt-2 mb-0">@Language.T("2,000+ minis on keyrings worldwide")</h2>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
@@ -139,7 +135,7 @@
                             <div class="testi-name">Martin K.</div>
                             <div class="testi-car">VW Golf IV</div>
                         </div>
-                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> @Language.T("Verified")</span>
                     </div>
                 </div>
             </div>
@@ -153,7 +149,7 @@
                             <div class="testi-name">Elena P.</div>
                             <div class="testi-car">Mercedes W124 300CE</div>
                         </div>
-                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> @Language.T("Verified")</span>
                     </div>
                 </div>
             </div>
@@ -167,7 +163,7 @@
                             <div class="testi-name">Dimitar T.</div>
                             <div class="testi-car">Skoda Octavia</div>
                         </div>
-                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                        <span class="testi-verified ms-auto"><i class="bi bi-patch-check-fill"></i> @Language.T("Verified")</span>
                     </div>
                 </div>
             </div>
@@ -175,55 +171,52 @@
     </div>
 </section>
 
-<!-- Guarantees -->
 <section class="assure-strip">
     <div class="container">
         <div class="row">
             <div class="col-6 col-lg-3">
                 <div class="assure-item">
                     <i class="bi bi-shield-check"></i>
-                    <span><strong>30-day guarantee</strong>Don't love it? We reprint or refund.</span>
+                    <span><strong>@Language.T("30-day guarantee")</strong>@Language.T("Don't love it? We reprint or refund.")</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
                 <div class="assure-item">
                     <i class="bi bi-truck"></i>
-                    <span><strong>Free shipping over $40</strong>Tracked, worldwide.</span>
+                    <span><strong>@Language.T("Free shipping over $40")</strong>@Language.T("Tracked, worldwide.")</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
                 <div class="assure-item">
                     <i class="bi bi-lock-fill"></i>
-                    <span><strong>Secure checkout</strong>Cards, PayPal & Apple Pay.</span>
+                    <span><strong>@Language.T("Secure checkout")</strong>@Language.T("Cards, PayPal & Apple Pay.")</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
                 <div class="assure-item">
                     <i class="bi bi-printer-fill"></i>
-                    <span><strong>Printed to order</strong>Made for you in 3–5 days.</span>
+                    <span><strong>@Language.T("Printed to order")</strong>@Language.T("Made for you in 3–5 days.")</span>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Studio CTA -->
 <section class="section">
     <div class="container">
         <div class="surface-card blueprint-soft p-4 p-md-5" style="border-radius: var(--radius-lg); overflow: hidden;">
             <div class="row align-items-center gy-4">
                 <div class="col-lg-8">
-                    <span class="eyebrow">The Studio</span>
-                    <h2 class="mt-2 mb-2">Your car, your colours — in under a minute.</h2>
+                    <span class="eyebrow">@Language.T("The Studio")</span>
+                    <h2 class="mt-2 mb-2">@Language.T("Your car, your colours — in under a minute.")</h2>
                     <p class="text-soft mb-2" style="max-width: 36rem;">
-                        Jump into the Studio and design a one-of-a-kind mini of your car.
-                        Nothing to install — it all happens right in your browser.
+                        @Language.T("Jump into the Studio and design a one-of-a-kind mini of your car. Nothing to install — it all happens right in your browser.")
                     </p>
-                    <span class="ship-note"><span class="live-dot"></span> Order today — printing starts tomorrow</span>
+                    <span class="ship-note"><span class="live-dot"></span> @Language.T("Order today — printing starts tomorrow")</span>
                 </div>
                 <div class="col-lg-4 text-lg-end">
-                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> Design yours now</a>
-                    <p class="text-faint mt-2 mb-0" style="font-size: 0.76rem;">From @Sizes.Default.BasePrice.ToString("C2") · 30-day guarantee</p>
+                    <a href="convert" class="btn-accent-c btn-lg"><i class="bi bi-magic"></i> @Language.T("Design yours now")</a>
+                    <p class="text-faint mt-2 mb-0" style="font-size: 0.76rem;">@Language.T("from") @Sizes.Default.BasePrice.ToString("C2") · @Language.T("30-day guarantee")</p>
                 </div>
             </div>
         </div>
@@ -234,7 +227,12 @@
     private IEnumerable<Product>? _featured;
 
     protected override async Task OnInitializedAsync()
-        => _featured = await ProductService.GetFeaturedProductsAsync();
+    {
+        Language.OnChange += StateHasChanged;
+        _featured = await ProductService.GetFeaturedProductsAsync();
+    }
 
     private void QuickAdd(Product product) => CartService.AddItem(product, product.DefaultMaterial);
+
+    public void Dispose() => Language.OnChange -= StateHasChanged;
 }

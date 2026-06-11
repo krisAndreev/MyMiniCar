@@ -3,7 +3,9 @@
 @inject CartService CartService
 @inject CheckoutService CheckoutService
 @inject ShippingService ShippingService
+@inject LanguageService Language
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <div class="container py-5">
     <div class="studio-panel text-center mx-auto" style="max-width: 34rem;">
@@ -11,16 +13,16 @@
         {
             <div class="py-4">
                 <span class="spinner-dark"></span>
-                <p class="text-soft mt-3 mb-0">Confirming your payment…</p>
+                <p class="text-soft mt-3 mb-0">@Language.T("Confirming your payment...")</p>
             </div>
         }
         else if (_paid)
         {
             <div class="confirm-badge"><i class="bi bi-check-lg"></i></div>
-            <h1 class="mt-4 mb-2">Thank you!</h1>
+            <h1 class="mt-4 mb-2">@Language.T("Thank you!")</h1>
             <p class="text-soft">
-                Your order is confirmed@(string.IsNullOrEmpty(_email) ? "" : $" — a receipt is on its way to {_email}").
-                We'll start printing your keychain right away.
+                @Language.T("Your order is confirmed")@(string.IsNullOrEmpty(_email) ? "" : $" — {Language.T("a receipt is on its way to")} {_email}").
+                @Language.T("We'll start printing your keychain right away.")
             </p>
             @if (_amount is not null)
             {
@@ -29,26 +31,26 @@
             @if (_creatingLabel)
             {
                 <p class="text-soft mt-3 mb-0" style="font-size: 0.82rem;">
-                    <span class="spinner-dark"></span> Arranging Econt delivery…
+                    <span class="spinner-dark"></span> @Language.T("Arranging Econt delivery...")
                 </p>
             }
             else if (!string.IsNullOrEmpty(_tracking))
             {
                 <div class="confirm-amount mt-3" style="font-size: 1rem;">
-                    <i class="bi bi-truck"></i> Econt tracking: <strong>@_tracking</strong>
+                    <i class="bi bi-truck"></i> @Language.T("Econt tracking:") <strong>@_tracking</strong>
                 </div>
             }
             <div class="d-flex gap-2 justify-content-center mt-4">
-                <button class="btn-primary-c" @onclick="@(() => Navigation.NavigateTo("products"))">Continue shopping</button>
-                <button class="btn-ghost-c" @onclick="@(() => Navigation.NavigateTo("convert"))">Design another</button>
+                <button class="btn-primary-c" @onclick="@(() => Navigation.NavigateTo("products"))">@Language.T("Continue shopping")</button>
+                <button class="btn-ghost-c" @onclick="@(() => Navigation.NavigateTo("convert"))">@Language.T("Design another")</button>
             </div>
         }
         else
         {
             <div class="confirm-badge confirm-badge-warn"><i class="bi bi-hourglass-split"></i></div>
-            <h1 class="mt-4 mb-2">@_title</h1>
-            <p class="text-soft">@_message</p>
-            <button class="btn-primary-c mt-3" @onclick="@(() => Navigation.NavigateTo("checkout"))">Back to checkout</button>
+            <h1 class="mt-4 mb-2">@Language.T(_title)</h1>
+            <p class="text-soft">@Language.T(_message)</p>
+            <button class="btn-primary-c mt-3" @onclick="@(() => Navigation.NavigateTo("checkout"))">@Language.T("Back to checkout")</button>
         }
     </div>
 </div>
@@ -66,6 +68,8 @@
     private string? _tracking;
     private string _title = "Payment not completed";
     private string _message = "We couldn't confirm a successful payment for this order.";
+
+    protected override void OnInitialized() => Language.OnChange += StateHasChanged;
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,7 +98,6 @@
             _amount = FormatAmount(session.AmountTotal, session.Currency);
             CartService.ClearCart();
 
-            // TODO #REFACTOR - make display-only once webhook books the label
             _creatingLabel = true;
             var label = await ShippingService.CreateLabelAsync(SessionId);
             _tracking = label?.ShipmentNumber;
@@ -120,4 +123,6 @@
         };
         return $"{symbol}{value:0.00}";
     }
+
+    public void Dispose() => Language.OnChange -= StateHasChanged;
 }
