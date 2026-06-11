@@ -395,7 +395,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:** none.
 
-- [ ] **Step 1: Save → list → delete via the Api with a real token**
+- [x] **Step 1: Save → list → delete via the Api with a real token**
 
 ```bash
 cd src/MyMiniCar.Api
@@ -411,7 +411,7 @@ lsof -ti:5230 | xargs kill -9 2>/dev/null
 ```
 Expected: save returns `{"id":"..."}`, list returns an array with that design.
 
-- [ ] **Step 2: Commit plan complete**
+- [x] **Step 2: Commit plan complete**
 
 Tick all boxes, then commit the plan file.
 
