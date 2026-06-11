@@ -11,11 +11,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 // Custom Luxury Store Services
-builder.Services.AddScoped<IProductService, MockProductService>();
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5230";
+
+builder.Services.AddScoped<IProductService>(_ => new ApiProductService(apiBaseUrl));
 builder.Services.AddSingleton<CartService>();
 builder.Services.AddSingleton<LanguageService>();
 
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5230";
 builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
 builder.Services.AddSingleton(_ => new ShippingService(apiBaseUrl));
 

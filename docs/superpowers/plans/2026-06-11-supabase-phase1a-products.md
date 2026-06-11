@@ -201,7 +201,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `src/MyMiniCar.Web/Services/ApiProductService.cs`
 - Modify: `src/MyMiniCar.Web/Program.cs`
 
-- [ ] **Step 1: Create the service**
+- [x] **Step 1: Create the service**
 
 `src/MyMiniCar.Web/Services/ApiProductService.cs`:
 ```csharp
@@ -236,7 +236,7 @@ public class ApiProductService : IProductService
 }
 ```
 
-- [ ] **Step 2: Swap the DI registration**
+- [x] **Step 2: Swap the DI registration**
 
 In `src/MyMiniCar.Web/Program.cs`, replace:
 ```csharp
@@ -258,12 +258,12 @@ builder.Services.AddScoped(_ => new CheckoutService(apiBaseUrl));
 builder.Services.AddSingleton(_ => new ShippingService(apiBaseUrl));
 ```
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `cd src/MyMiniCar.Web && dotnet build`
 Expected: Build succeeded, 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/MyMiniCar.Web/Services/ApiProductService.cs src/MyMiniCar.Web/Program.cs
