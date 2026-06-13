@@ -1,0 +1,136 @@
+MYMINICAR BRAND DESIGN SYSTEM
+For replicating brand on new website
+==========================================
+
+STACK
+- Bootstrap 5 grid + custom CSS variables (NOT Tailwind)
+- Source: src/MyMiniCar.Web/wwwroot/css/app.css
+
+COLORS
+- Primary (racing purple): #715AFF
+- Primary hover: #604DD9
+- Primary tint (10% bg): rgba(113, 90, 255, 0.10)
+- Accent (racing red/coral): #FF4A2E
+- Accent hover: #E23414
+- Accent tint (10% bg): rgba(255, 74, 46, 0.10)
+
+- Background: #F4F6FB
+- Surface (cards/header): #FFFFFF
+- Surface alt: #ECEFF6
+- Surface ink (dark footer/strip): #11141B
+
+- Text primary: #14171F
+- Text secondary: #5A6373
+- Text faint/disabled: #9AA2B1
+
+- Border: #E1E6F0
+- Border strong: #CBD2E0
+
+TYPOGRAPHY (Google Fonts)
+- Display/headings: 'Bricolage Grotesque', 'Hanken Grotesk', sans-serif
+- Body: 'Hanken Grotesk', system-ui, sans-serif
+- Mono (labels/metadata): 'Spline Sans Mono', ui-monospace, monospace
+
+Import:
+https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap
+
+Sizes:
+- h1: clamp(2.6rem, 5.5vw, 4.2rem), weight 800
+- h2: clamp(1.9rem, 3.5vw, 2.7rem), weight 700
+- h3: 1.5rem, weight 700
+- body: default size, weight 400, line-height 1.6
+- .eyebrow label: 0.72rem, weight 500, letter-spacing 0.22em, uppercase
+
+BORDER RADIUS
+- --radius: 16px (standard cards/containers)
+- --radius-sm: 10px (inputs, small components)
+- --radius-lg: 26px (hero containers, modals)
+- Buttons: 999px (pill shape)
+- Select/chips: 999px (pill shape)
+
+BOX SHADOW / ELEVATION
+- shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06)
+- shadow: 0 10px 30px rgba(22, 30, 56, 0.10)
+- shadow-lg: 0 26px 60px rgba(22, 30, 56, 0.16)
+- focus ring: 0 0 0 4px var(--primary-tint)
+- primary button hover: 0 8px 20px rgba(113, 90, 255, 0.28)
+- primary button hover strong: 0 12px 26px rgba(113, 90, 255, 0.34)
+- fixed bottom bar: 0 -8px 24px rgba(20, 28, 50, 0.08)
+- keychain preview drop shadow: 0 18px 22px rgba(20, 28, 50, 0.22)
+
+TRANSITIONS / EASING
+- ease: cubic-bezier(0.16, 1, 0.3, 1)
+- global transition: all 0.35s var(--ease)
+- floaty animation (keychain): 6s ease-in-out infinite
+
+SPACING
+- Bootstrap base spacing (0.5rem increments): 0.5/1/1.5/2/2.5/3/4 rem
+- Section padding: clamp(3.5rem, 7vw, 6rem) 0
+- Hero padding: clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 6vw, 5rem)
+- .gap-tight: 0.5rem (custom, beyond Bootstrap gap-3/4/5)
+
+BREAKPOINTS (Bootstrap standard)
+- lg: max-width 991px
+- md: max-width 767px
+- sm: max-width 575px
+
+LOGO / BRANDING
+- File: MMCLogoNew.svg (car keychain icon, viewBox 0 0 1026 1026)
+- Header size: 62px height, Footer size: 68px height
+- Wordmark: "MyMini" + "Car" (Car in --accent color)
+- Brand mark circle (icon badge): 30x30px, gradient 135deg primary -> accent
+
+HOMEPAGE LAYOUT (Index.razor sections, in order)
+1. Hero - two gradient blobs bg, left: heading + CTA "Design yours now" + pricing/trust
+   metrics, right: 3D car model viewer
+2. Trust strip - 3 numbered steps (Pick model -> Customize & preview -> Print & ship),
+   horizontal divider borders
+3. Popular products - "Fan favourites" eyebrow + heading + "View all" link,
+   product grid 3-col (lg) / 2-col (sm) / 1-col (xs), cards with hover overlay
+4. Testimonials - "Loved by drivers" heading, 3-col cards, star ratings,
+   verified badges, user initials
+5. Assurance strip - dark bg (--surface-ink), 4-col items
+   (guarantee, shipping, security, printing)
+6. Studio CTA - card with blueprint pattern bg, left description,
+   right large "Design yours now" button
+
+COMPONENTS
+Buttons:
+- .btn-primary-c - filled purple, pill, shadow
+- .btn-accent-c - filled red, pill, shadow
+- .btn-ghost-c - outline, border
+- .btn-dark-c - dark filled
+- .btn-outline-c - standard outline
+- .btn-block / .btn-lg / .btn-sm-c - size/width variants
+- .link-arrow - text link with arrow icon
+
+Forms:
+- .input-c - text input, radius 10px
+- .select-c - dropdown, pill (999px)
+- .chip - filter/tag button, pill
+- .field-label - uppercase mono label
+
+Cards:
+- .kc-card - product card w/ hover effect, radius 16px
+- .testi-card - testimonial card
+- .surface-card - generic card
+
+MATERIAL/FILAMENT GRADIENT SWATCHES (product-specific, optional for new site)
+- fil-black: linear-gradient(145deg, #4a4a4f, #16161a)
+- fil-white: linear-gradient(145deg, #ffffff, #d7dae0)
+- fil-red: linear-gradient(145deg, #ff5a44, #c81f0c)
+- fil-blue: linear-gradient(145deg, #4f86ff, #1741b8)
+- fil-silver: linear-gradient(145deg, #f2f4f7, #9aa3b0)
+- fil-glow: linear-gradient(145deg, #d7ffe6, #7bf2a8)
+- fil-marble: linear-gradient(145deg, #f4f4f2, #c9ccd2 60%, #8c9098)
+- fil-wood: linear-gradient(145deg, #d9a86a, #8a5a2b)
+
+DARK MODE
+- None. Light-only design. Only dark surface is footer/assurance strip
+  (--surface-ink #11141B).
+
+ACCESSIBILITY
+- 4px focus ring using primary tint
+- High contrast text, semantic HTML, aria-labels on icon buttons
+</content>
+</invoke>
